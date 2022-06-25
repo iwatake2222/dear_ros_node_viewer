@@ -16,7 +16,7 @@
 __init__
 """
 
-from dear_ros_node_viewer.dear_ros_node_viewer import  main
+from dear_ros_node_viewer.dear_ros_node_viewer import main
 
 
 __all__ = [
