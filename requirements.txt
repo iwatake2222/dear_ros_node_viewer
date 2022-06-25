@@ -1,3 +1,12 @@
 pytest
 pytest-cov
 pylint
+
+numpy
+matplotlib
+networkx
+dearpygui
+graphviz
+pygraphviz
+pyyaml
+

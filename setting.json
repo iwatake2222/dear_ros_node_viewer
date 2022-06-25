@@ -1,0 +1,38 @@
+{
+    "app_setting": {
+        "window_size": [1920, 1080],
+        "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf"
+    },
+    "group_setting": {
+        "/sensing": {
+            "direction": "horizontal",
+            "offset": [0.0, 1.0, 2.5, 2.0],
+            "color": [0, 128, 0]
+        },
+        "/localization": {
+            "direction": "horizontal",
+            "offset": [0.0, 3.0, 1.5, 1.0],
+            "color": [0, 0, 128]
+        },
+        "/perception": {
+            "direction": "horizontal",
+            "offset": [3.0, 3.0, 4.0, 1.5],
+            "color": [128, 128, 0]
+        },
+        "/planning": {
+            "direction": "horizontal",
+            "offset": [3.0, 1.0, 4.0, 1.5],
+            "color": [0, 128, 128]
+        },
+        "/control": {
+            "direction": "horizontal",
+            "offset": [3.0, 0.0, 1.0, 0.8],
+            "color": [128, 0, 128]
+        },
+        "__others__": {
+            "direction": "horizontal",
+            "offset": [0.0, 0.0, 1.0, 1.0],
+            "color": [16, 16, 16]
+        }
+    }
+}

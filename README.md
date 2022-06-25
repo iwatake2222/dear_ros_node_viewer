@@ -2,8 +2,9 @@
 ROS2 node viewer using Dear PyGui 
 
 ```sh
+sudo apt install graphviz graphviz-dev
 pip3 install -r requirements.txt
-python3 -m dear_ros_node_viewer
+python3 -m dear_ros_node_viewer --architecture_yaml_file architecture.yaml
 
 ```
 
@@ -11,7 +12,7 @@ python3 -m dear_ros_node_viewer
 ## Commands for development
 ```sh
 ### Debug ###
-python3 main.py
+python3 main.py --architecture_yaml_file architecture.yaml
 
 ### Install ###
 pip3 install ./
