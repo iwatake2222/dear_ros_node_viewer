@@ -26,7 +26,7 @@ python3 -m pylint ./dear_ros_node_viewer
 ```
 
 ## To Do
-- [ ] Align center
+- [x] Align center
 - [ ] Reset layout
     - [ ] impl
     - [x] menu

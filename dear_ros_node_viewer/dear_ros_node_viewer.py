@@ -26,6 +26,27 @@ from dear_ros_node_viewer.caret2networkx import caret2networkx
 from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
 
+def align_layout(graph):
+    """
+    Set (max+min) / 2 as origin(0, 0)
+
+    Note:
+        This logis is not mandatory. I added this just to make zoom a little better
+        Without this, zoom in/out is processed based on (0,0)=left-top
+        When Dear PyGui support zoomable node editor, this logic is not needed
+    """
+    layout_np = np.array(list(map(lambda val: val['pos'], graph.nodes.values())))
+    layout_min, layout_max = layout_np.min(0), layout_np.max(0)
+    offset_x = (layout_max[0] + layout_min[0]) / 2
+    offset_y = (layout_max[1] + layout_min[1]) / 2
+    if offset_x == 0 or offset_y == 0:
+        return graph
+    for node_name in graph.nodes:
+        graph.nodes[node_name]['pos'][0] -= offset_x
+        graph.nodes[node_name]['pos'][1] -= offset_y
+    return graph
+
+
 def normalize_layout(layout: dict[str, tuple[int, int]]):
     """
     Normalize positions to [0.0, 1.0] (left-top = (0, 0))
@@ -187,6 +208,7 @@ def main():
 
     graph = caret2networkx(args.architecture_yaml_file, args.target_path)
     graph = place_node_by_group(graph, group_setting)
+    graph = align_layout(graph)
 
     Networkx2DearPyGui(
         app_setting, graph, app_setting['window_size'][0], app_setting['window_size'][1])
