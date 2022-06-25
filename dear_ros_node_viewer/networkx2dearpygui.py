@@ -97,8 +97,8 @@ class Networkx2DearPyGui:
     dpg_edge_theme_color: dict[str, int] = {}
     node_selected_dict: dict[str, bool] = {}
 
-    zoom_level: int = 10
-    zoom_config: list = []
+    graph_size: list[int] = [100, 100]
+    font_size: int = 15
     font_list: dict[int, int] = {}
 
     def __init__(
@@ -121,17 +121,18 @@ class Networkx2DearPyGui:
         """
 
         self.store_graph(graph)
+        self.graph_size = [window_width, window_height]
 
         dpg.create_context()
-
-        # Locate node and link #
+        self.make_font_table(app_setting['font'])
+        with dpg.handler_registry():
+            dpg.add_mouse_wheel_handler(callback=self.cb_wheel)
         with dpg.window(
                 width=window_width, height=window_height,
                 no_collapse=True, no_title_bar=True, no_move=True,
                 no_resize=True) as self.window_id:
-            with dpg.handler_registry():
-                dpg.add_mouse_wheel_handler(callback=self.cb_wheel)
-            self.make_zoom_table(app_setting['font'], window_width, window_height)
+
+            self.add_menu_in_dpg()
 
             with dpg.node_editor(
                     menubar=False, minimap=True,
@@ -140,7 +141,7 @@ class Networkx2DearPyGui:
                 self.add_node_in_dpg(dpg_id_dict)
                 self.add_link_in_dpg(dpg_id_dict)
 
-        # Update node position and font according to the default zoom level #
+        # Update node position according to the default graph size #
         self.cb_wheel(0, 0)
 
         # Dear PyGui stuffs #
@@ -152,6 +153,28 @@ class Networkx2DearPyGui:
         dpg.show_viewport()
         dpg.start_dearpygui()
         dpg.destroy_context()
+
+    def add_menu_in_dpg(self):
+        """ Add menu bar """
+        with dpg.menu_bar():
+            with dpg.menu(label="Layout"):
+                dpg.add_menu_item(label="Reset", callback=self.cb_menu_layout_reset)
+                dpg.add_menu_item(label="Save", callback=self.cb_menu_layout_save)
+                dpg.add_menu_item(label="Load", callback=self.cb_menu_layout_load)
+
+            with dpg.menu(label="Graph"):
+                dpg.add_menu_item(label="Current ROS (experimental)",
+                                  callback=self.cb_menu_graph_current)
+
+            with dpg.menu(label="Font"):
+                dpg.add_slider_int(label="Font Size",
+                                   default_value=self.font_size, min_value=8, max_value=40,
+                                   callback=self.cb_menu_font_size)
+
+            with dpg.menu(label="Display Name"):
+                dpg.add_menu_item(label="Full", callback=self.cb_menu_dispay_full)
+                dpg.add_menu_item(label="First + Last", callback=self.cb_menu_dispay_firstlast)
+                dpg.add_menu_item(label="Last Only", callback=self.cb_menu_dispay_last)
 
     def store_graph(self, graph: nx.classes.digraph.DiGraph):
         """
@@ -179,8 +202,8 @@ class Networkx2DearPyGui:
         for node_name in self.graph.nodes:
             pos = self.graph.nodes[node_name]['pos']
             pos = [
-                pos[0] * self.zoom_config[self.zoom_level][1],
-                pos[1] * self.zoom_config[self.zoom_level][2]]
+                pos[0] * self.graph_size[0],
+                pos[1] * self.graph_size[1]]
             with dpg.node(label=replace_nodename(node_name), pos=pos) as node_id:
                 self.dpg_node_id_dict[node_name] = node_id
 
@@ -242,7 +265,6 @@ class Networkx2DearPyGui:
         callback function for window resized (Dear PyGui)
         change node editer size
         """
-
         window_width = app_data[2]
         window_height = app_data[3]
         dpg.set_item_width(self.window_id, window_width)
@@ -313,67 +335,71 @@ class Networkx2DearPyGui:
         for node_name, node_id in self.dpg_node_id_dict.items():
             pos = dpg.get_item_pos(node_id)
             self.graph.nodes[node_name]['pos'] = [
-                pos[0] / self.zoom_config[self.zoom_level][1],
-                pos[1] / self.zoom_config[self.zoom_level][2]]
+                pos[0] / self.graph_size[0],
+                pos[1] / self.graph_size[1]]
 
         if app_data > 0:
-            if self.zoom_level < len(self.zoom_config) - 1:
-                self.zoom_level += 1
+            self.graph_size = list(map(lambda val: val * 1.1, self.graph_size))
         elif app_data < 0:
-            if self.zoom_level > 0:
-                self.zoom_level -= 1
+            self.graph_size = list(map(lambda val: val * 0.9, self.graph_size))
 
-        # Update node position and font size according to new zoom level
+        # Update node position according to new graph size
         for node_name, node_id in self.dpg_node_id_dict.items():
             pos = self.graph.nodes[node_name]['pos']
-            pos[0] = pos[0] * self.zoom_config[self.zoom_level][1]
-            pos[1] = pos[1] * self.zoom_config[self.zoom_level][2]
+            pos[0] = pos[0] * self.graph_size[0]
+            pos[1] = pos[1] * self.graph_size[1]
             dpg.set_item_pos(node_id, pos)
         self.update_font()
 
+    def cb_menu_layout_reset(self, sender, app_data, user_data):
+        """ Reset layout """
+        print('cb_menu_layout_reset')
+
+    def cb_menu_layout_save(self, sender, app_data, user_data):
+        """ Save current layout """
+        print('cb_menu_layout_reset')
+
+    def cb_menu_layout_load(self, sender, app_data, user_data):
+        """ Load layout from file """
+        print('cb_menu_layout_reset')
+
+    def cb_menu_graph_current(self, sender, app_data, user_data):
+        """ Update graph using current ROS status """
+        print('cb_menu_graph_current')
+
+    def cb_menu_font_size(self, sender, app_data, user_data):
+        """ Change font size """
+        self.font_size = app_data
+        self.update_font()
+
+    def cb_menu_dispay_full(self, sender, app_data, user_data):
+        """ Display full name """
+        print('cb_menu_dispay_full')
+
+    def cb_menu_dispay_firstlast(self, sender, app_data, user_data):
+        """ Display omitted name """
+        print('cb_menu_dispay_firstlast')
+
+    def cb_menu_dispay_last(self, sender, app_data, user_data):
+        """ Display omitted name """
+        print('cb_menu_dispay_last')
+
     def update_font(self):
         """
-        Update font used in all nodes according to current zoom level
+        Update font used in all nodes according to current font size
         """
         for node_id in self.dpg_node_id_dict.values():
-            dpg.bind_item_font(node_id, self.zoom_config[self.zoom_level][0])
+            if self.font_size in self.font_list:
+                dpg.bind_item_font(node_id, self.font_list[self.font_size])
 
-    def make_zoom_table(self, font_path, window_width: int, window_height: int):
-        """Make zoom table"""
+    def make_font_table(self, font_path):
+        """Make font table"""
         with dpg.font_registry():
-            for i in range(7, 20):
+            for i in range(8, 40):
                 try:
                     self.font_list[i] = dpg.add_font(font_path, i)
                 except SystemError:
                     print('Failed to load font')
-        self.zoom_config.append([self.font_list[10], window_width * 0.20, window_height * 0.20])
-        self.zoom_config.append([self.font_list[10], window_width * 0.25, window_height * 0.25])
-        self.zoom_config.append([self.font_list[11], window_width * 0.30, window_height * 0.30])
-        self.zoom_level = len(self.zoom_config) - 1     # default zoom level
-        self.zoom_config.append([self.font_list[11], window_width * 0.35, window_height * 0.35])
-        self.zoom_config.append([self.font_list[12], window_width * 0.40, window_height * 0.40])
-        self.zoom_config.append([self.font_list[12], window_width * 0.45, window_height * 0.45])
-        self.zoom_config.append([self.font_list[13], window_width * 0.50, window_height * 0.50])
-        self.zoom_config.append([self.font_list[13], window_width * 0.55, window_height * 0.55])
-        self.zoom_config.append([self.font_list[14], window_width * 0.60, window_height * 0.60])
-        self.zoom_config.append([self.font_list[14], window_width * 0.65, window_height * 0.65])
-        self.zoom_config.append([self.font_list[14], window_width * 0.70, window_height * 0.70])
-        self.zoom_config.append([self.font_list[15], window_width * 0.75, window_height * 0.75])
-        self.zoom_config.append([self.font_list[15], window_width * 0.80, window_height * 0.80])
-        self.zoom_config.append([self.font_list[15], window_width * 0.85, window_height * 0.85])
-        self.zoom_config.append([self.font_list[16], window_width * 0.90, window_height * 0.90])
-        self.zoom_config.append([self.font_list[16], window_width * 0.95, window_height * 0.95])
-        self.zoom_config.append([self.font_list[16], window_width * 1.00, window_height * 1.00])
-        self.zoom_config.append([self.font_list[17], window_width * 1.10, window_height * 1.10])
-        self.zoom_config.append([self.font_list[17], window_width * 1.15, window_height * 1.15])
-        self.zoom_config.append([self.font_list[17], window_width * 1.20, window_height * 1.20])
-        self.zoom_config.append([self.font_list[17], window_width * 1.25, window_height * 1.25])
-        self.zoom_config.append([self.font_list[17], window_width * 1.30, window_height * 1.30])
-        self.zoom_config.append([self.font_list[17], window_width * 1.35, window_height * 1.35])
-        self.zoom_config.append([self.font_list[18], window_width * 1.40, window_height * 1.40])
-        self.zoom_config.append([self.font_list[18], window_width * 1.45, window_height * 1.45])
-        self.zoom_config.append([self.font_list[18], window_width * 1.50, window_height * 1.50])
-        self.zoom_config.append([self.font_list[18], window_width * 1.60, window_height * 1.60])
 
 
 if __name__ == '__main__':

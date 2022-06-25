@@ -1,6 +1,7 @@
 # Dear ROS Node Viewer
-ROS2 node viewer using Dear PyGui 
+ROS2 Node Viewer using Dear PyGui 
 
+## How to Run
 ```sh
 sudo apt install graphviz graphviz-dev
 pip3 install -r requirements.txt
@@ -9,7 +10,7 @@ python3 -m dear_ros_node_viewer --architecture_yaml_file architecture.yaml
 ```
 
 
-## Commands for development
+## Commands for Development
 ```sh
 ### Debug ###
 python3 main.py --architecture_yaml_file architecture.yaml
@@ -23,3 +24,23 @@ pip3 install ./
 python3 -m pytest --doctest-modules -v --cov=./dear_ros_node_viewer
 python3 -m pylint ./dear_ros_node_viewer
 ```
+
+## To Do
+- [ ] Align center
+- [ ] Reset layout
+    - [ ] impl
+    - [x] menu
+- [ ] Save/Load layout
+    - [ ] impl
+    - [x] menu
+- [x] +/- font size
+    - [x] impl
+    - [x] menu
+- [ ] Omitted name
+    - [ ] full / first + last / last only
+    - [ ] impl
+    - [x] menu
+- [ ] Read dot file
+- [ ] Current ROS node graph
+
+
