@@ -322,7 +322,7 @@ class Networkx2DearPyGui:
         # Save current layout in normalized coordinate
         for node_name, node_id in self.dpg_node_id_dict.items():
             pos = dpg.get_item_pos(node_id)
-            self.graph.nodes[node_name]['pos'] = [
+            self.graph.nodes[node_name]['pos_changed'] = [
                 pos[0] / self.graph_size[0],
                 pos[1] / self.graph_size[1]]
 
@@ -333,27 +333,28 @@ class Networkx2DearPyGui:
 
         # Update node position according to new graph size
         for node_name, node_id in self.dpg_node_id_dict.items():
-            pos = self.graph.nodes[node_name]['pos']
-            pos[0] = pos[0] * self.graph_size[0]
-            pos[1] = pos[1] * self.graph_size[1]
+            pos = self.graph.nodes[node_name]['pos_changed']
+            pos = (pos[0] * self.graph_size[0], pos[1] * self.graph_size[1])
             dpg.set_item_pos(node_id, pos)
-        self._update_font()
 
     def _cb_menu_layout_reset(self, sender, app_data, user_data):
         """ Reset layout """
-        print('_cb_menu_layout_reset')
+        for node_name, node_id in self.dpg_node_id_dict.items():
+            pos = self.graph.nodes[node_name]['pos']
+            pos = (pos[0] * self.graph_size[0], pos[1] * self.graph_size[1])
+            dpg.set_item_pos(node_id, pos)
 
     def _cb_menu_layout_save(self, sender, app_data, user_data):
         """ Save current layout """
-        print('_cb_menu_layout_reset')
+        print('not implemented yet')
 
     def _cb_menu_layout_load(self, sender, app_data, user_data):
         """ Load layout from file """
-        print('_cb_menu_layout_reset')
+        print('not implemented yet')
 
     def _cb_menu_graph_current(self, sender, app_data, user_data):
         """ Update graph using current ROS status """
-        print('_cb_menu_graph_current')
+        print('not implemented yet')
 
     def _cb_menu_font_size(self, sender, app_data, user_data):
         """ Change font size """
