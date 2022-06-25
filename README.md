@@ -26,21 +26,23 @@ python3 -m pylint ./dear_ros_node_viewer
 ```
 
 ## To Do
-- [x] Align center
-- [x] Reset layout
-    - [x] impl
-    - [x] menu
-- [ ] Save/Load layout
-    - [ ] impl
-    - [x] menu
-- [x] +/- font size
-    - [x] impl
-    - [x] menu
-- [x] Omitted name
-    - [x] full / first + last / last only
-    - [x] impl
-    - [x] menu
-- [ ] Read dot file
-- [ ] Current ROS node graph
-
-
+- Others
+    - [ ] Save/Load layout
+    - [ ] Add sample data
+    - [ ] Modify setting file
+        - layout (horizontal, vertical)
+        - fix layout
+        - fix color
+- Support more format
+    - [ ] Graph from dot file
+    - [ ] Graph from current ROS status
+- Cooperation with CARET
+    - [ ] Display executor and callback group
+        - from architecture file
+    - [ ] Display trigger of publishment
+        - from architecture file
+        - subscribe, timer(with period time), unknown
+- More Cooperation with CARET
+    - [ ] Display frequency of publishment and callback
+        - need extra data created by CARET analysis
+    - [ ] Edit architecture file
