@@ -11,18 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Class for Viewer
+"""
+
 from __future__ import annotations
 import textwrap
-import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
 import dearpygui.dearpygui as dpg
 
 
 def replace_nodename(name):
     """
     replace an original node name to a name to be displayed
-    
+
     Parameters
     ----------
     name : str
@@ -42,7 +44,7 @@ def replace_nodename(name):
 def replace_edgename(name):
     """
     replace an original edge name to a name to be displayed
-    
+
     Parameters
     ----------
     name : str
@@ -53,7 +55,7 @@ def replace_edgename(name):
     display_name : str
         name to be displayed
     """
-    
+
     display_name = name.strip('"')
     display_name = textwrap.fill(display_name, 60)
     return display_name
@@ -62,15 +64,15 @@ def replace_edgename(name):
 class Networkx2DearPyGui:
     """
     Display node graph using Dear PyGui from NetworkX graph
-    
+
     Attributes
     ----------
-    G: nx.classes.digraph.DiGraph
+    graph: nx.classes.digraph.DiGraph
         NetworkX Graph
     node_list: list[str]
-        list of nodes in G
+        list of nodes in graph
     edge_list: list[str]
-        list of edges in G
+        list of edges in graph
     node_edge_dict: dict[str, tuple[list[str], list[str]]]
         association between nod eand edge
         {"node_name": [["/edge_out_name", ], ["/edge_in_name", ]]}
@@ -82,29 +84,35 @@ class Networkx2DearPyGui:
         association between font_size and dpg_font_id
     """
 
-    G: nx.classes.digraph.DiGraph
-    node_edge_dict: dict[str, tuple[list[str], list[str]]] = {} 
-    dpg_node_id_dict: dict[str,int] = {}
-    dpg_link_id_dict: dict[str,int] = {}
-    dpg_node_theme_color: dict[str,int] = {}
-    dpg_edge_theme_color: dict[str,int] = {}
-    node_selected_dict: dict[str,bool] = {}
+    COLOR_HIGHLIGHT_PUB = [64, 0, 0]
+    COLOR_HIGHLIGHT_SUB = [0, 64, 0]
+    COLOR_HIGHLIGHT_DEF = [64, 64, 64]
+    COLOR_HIGHLIGHT_EDGE = [196, 196, 196]
+
+    graph: nx.classes.digraph.DiGraph
+    node_edge_dict: dict[str, tuple[list[str], list[str]]] = {}
+    dpg_node_id_dict: dict[str, int] = {}
+    dpg_link_id_dict: dict[str, int] = {}
+    dpg_node_theme_color: dict[str, int] = {}
+    dpg_edge_theme_color: dict[str, int] = {}
+    node_selected_dict: dict[str, bool] = {}
 
     zoom_level: int = 10
     zoom_config: list = []
     font_list: dict[int, int] = {}
 
-
-    def __init__(self, 
-        app_setting: dict,
-        G: nx.classes.digraph.DiGraph,
-        window_width: int = 1920, window_height: int = 1080):
+    def __init__(
+            self,
+            app_setting: dict,
+            graph: nx.classes.digraph.DiGraph,
+            window_width: int = 1920,
+            window_height: int = 1080):
         """
         Parameters
         ----------
         app_setting: dict
             application settings
-        G: nx.classes.digraph.DiGraph
+        graph: nx.classes.digraph.DiGraph
             NetworkX Graph
         window_width : int,  default 1920
             Windows size
@@ -112,145 +120,188 @@ class Networkx2DearPyGui:
             Windows size
         """
 
-        self.G = G
-
-        ''' Associate edge with node '''
-        for node_name in self.G.nodes:
-            self.node_edge_dict[node_name] = [set([]), set([])]
-        for edge in G.edges:
-            if 'label' in G.edges[edge]:
-                label = G.edges[edge]['label']
-                self.node_edge_dict[edge[0]][0].add(label)
-                self.node_edge_dict[edge[1]][1].add(label)
-            else:
-                self.node_edge_dict[edge[0]][0].add('out')
-                self.node_edge_dict[edge[1]][1].add('in')
-        
-        for node_name in self.G.nodes:
-            self.node_selected_dict[node_name] = False
+        self.store_graph(graph)
 
         dpg.create_context()
-        
-        ''' Locate node and link '''
-        with dpg.window(width=window_width, height=window_height, no_collapse=True, no_title_bar=True, no_move=True, no_resize=True) as self.window_id:
+
+        # Locate node and link #
+        with dpg.window(
+                width=window_width, height=window_height,
+                no_collapse=True, no_title_bar=True, no_move=True,
+                no_resize=True) as self.window_id:
             with dpg.handler_registry():
                 dpg.add_mouse_wheel_handler(callback=self.cb_wheel)
             self.make_zoom_table(app_setting['font'], window_width, window_height)
 
-            with dpg.node_editor(menubar=False, minimap=True, minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.nodeeditor_id:
+            with dpg.node_editor(
+                    menubar=False, minimap=True,
+                    minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.nodeeditor_id:
                 dpg_id_dict = {}    # {"nodename_edgename": id}
+                self.add_node_in_dpg(dpg_id_dict)
+                self.add_link_in_dpg(dpg_id_dict)
 
-                ''' Add nodes '''
-                for node_name in self.G.nodes:
-                    pos = self.G.nodes[node_name]['pos']
-                    pos = [pos[0] * self.zoom_config[self.zoom_level][1], pos[1] * self.zoom_config[self.zoom_level][2]]
-                    with dpg.node(label=replace_nodename(node_name), pos=pos) as node_id:
-                        self.dpg_node_id_dict[node_name] = node_id
-
-                        ''' Set color '''
-                        with dpg.theme() as theme_id:
-                            with dpg.theme_component(dpg.mvNode):
-                                dpg.add_theme_color( dpg.mvNodeCol_TitleBar, G.nodes[node_name]['color'] if 'color' in G.nodes[node_name] else [32, 32, 32], category = dpg.mvThemeCat_Nodes)
-                                theme_color = dpg.add_theme_color( dpg.mvNodeCol_NodeBackground, [64, 64, 64], category = dpg.mvThemeCat_Nodes)
-                                self.dpg_node_theme_color[node_name] = theme_color
-                                dpg.bind_item_theme(node_id, theme_id)
-
-                        ''' Set callback '''
-                        with dpg.item_handler_registry() as node_select_handler:
-                            dpg.add_item_clicked_handler(callback=self.cb_node_clicked)
-                            dpg.bind_item_handler_registry(node_id, node_select_handler)
-
-                        ''' Make association dictionary '''
-                        for edge_in in self.node_edge_dict[node_name][1]:
-                            with dpg.node_attribute() as id:
-                                dpg_id_dict[node_name + edge_in] = id
-                                dpg.add_text(default_value=replace_edgename(edge_in))
-                        for edge_out in self.node_edge_dict[node_name][0]:
-                            with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) as id:
-                                dpg_id_dict[node_name + edge_out] = id
-                                dpg.add_text(default_value=replace_edgename(edge_out))
-
-                ''' Add links between nodes '''
-                for edge in self.G.edges:
-                    if 'label' in G.edges[edge]:
-                        label = G.edges[edge]['label']
-                        edge_id = dpg.add_node_link(dpg_id_dict[edge[1] + label], dpg_id_dict[edge[0] + label])
-                    else:
-                        edge_id = dpg.add_node_link(dpg_id_dict[edge[1] + 'in'], dpg_id_dict[edge[0] + 'out'])
-                    self.dpg_link_id_dict[edge] = edge_id
-
-                    ''' Set color. color is the same color as publisher '''
-                    with dpg.theme() as theme_id:
-                        with dpg.theme_component(dpg.mvNodeLink):
-                            theme_color = dpg.add_theme_color( dpg.mvNodeCol_Link, G.nodes[edge[0]]['color'], category = dpg.mvThemeCat_Nodes)
-                            self.dpg_edge_theme_color[edge] = theme_color
-                            dpg.bind_item_theme(edge_id, theme_id)
-
-        ''' Update node position and font according to the default zoom level '''
+        # Update node position and font according to the default zoom level #
         self.cb_wheel(0, 0)
 
-        ''' Dear PyGui stuffs '''
-        dpg.create_viewport(title='CARET Architecture Visualizer', width=window_width, height=window_height)
+        # Dear PyGui stuffs #
+        dpg.create_viewport(
+            title='Dear ROS Node Viewer',
+            width=window_width, height=window_height)
         dpg.set_viewport_resize_callback(self.cb_resize)
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.start_dearpygui()
         dpg.destroy_context()
 
+    def store_graph(self, graph: nx.classes.digraph.DiGraph):
+        """
+        Store graph information
+        """
+        self.graph = graph
+
+        # Associate edge with node #
+        for node_name in self.graph.nodes:
+            self.node_edge_dict[node_name] = [set([]), set([])]
+        for edge in self.graph.edges:
+            if 'label' in self.graph.edges[edge]:
+                label = self.graph.edges[edge]['label']
+                self.node_edge_dict[edge[0]][0].add(label)
+                self.node_edge_dict[edge[1]][1].add(label)
+            else:
+                self.node_edge_dict[edge[0]][0].add('out')
+                self.node_edge_dict[edge[1]][1].add('in')
+
+        for node_name in self.graph.nodes:
+            self.node_selected_dict[node_name] = False
+
+    def add_node_in_dpg(self, dpg_id_dict: dict):
+        """ Add nodes """
+        for node_name in self.graph.nodes:
+            pos = self.graph.nodes[node_name]['pos']
+            pos = [
+                pos[0] * self.zoom_config[self.zoom_level][1],
+                pos[1] * self.zoom_config[self.zoom_level][2]]
+            with dpg.node(label=replace_nodename(node_name), pos=pos) as node_id:
+                self.dpg_node_id_dict[node_name] = node_id
+
+                # Set color #
+                with dpg.theme() as theme_id:
+                    with dpg.theme_component(dpg.mvNode):
+                        dpg.add_theme_color(
+                            dpg.mvNodeCol_TitleBar,
+                            self.graph.nodes[node_name]['color']
+                            if 'color' in self.graph.nodes[node_name]
+                            else [32, 32, 32],
+                            category=dpg.mvThemeCat_Nodes)
+                        theme_color = dpg.add_theme_color(
+                            dpg.mvNodeCol_NodeBackground,
+                            [64, 64, 64],
+                            category=dpg.mvThemeCat_Nodes)
+                        self.dpg_node_theme_color[node_name] = theme_color
+                        dpg.bind_item_theme(node_id, theme_id)
+
+                # Set callback #
+                with dpg.item_handler_registry() as node_select_handler:
+                    dpg.add_item_clicked_handler(callback=self.cb_node_clicked)
+                    dpg.bind_item_handler_registry(node_id, node_select_handler)
+
+                # Make association dictionary #
+                for edge_in in self.node_edge_dict[node_name][1]:
+                    with dpg.node_attribute() as attr_id:
+                        dpg_id_dict[node_name + edge_in] = attr_id
+                        dpg.add_text(default_value=replace_edgename(edge_in))
+                for edge_out in self.node_edge_dict[node_name][0]:
+                    with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) as attr_id:
+                        dpg_id_dict[node_name + edge_out] = attr_id
+                        dpg.add_text(default_value=replace_edgename(edge_out))
+
+    def add_link_in_dpg(self, dpg_id_dict: dict):
+        """ Add links between nodes """
+        for edge in self.graph.edges:
+            if 'label' in self.graph.edges[edge]:
+                label = self.graph.edges[edge]['label']
+                edge_id = dpg.add_node_link(
+                    dpg_id_dict[edge[1] + label], dpg_id_dict[edge[0] + label])
+            else:
+                edge_id = dpg.add_node_link(
+                    dpg_id_dict[edge[1] + 'in'], dpg_id_dict[edge[0] + 'out'])
+            self.dpg_link_id_dict[edge] = edge_id
+
+            # Set color. color is the same color as publisher #
+            with dpg.theme() as theme_id:
+                with dpg.theme_component(dpg.mvNodeLink):
+                    theme_color = dpg.add_theme_color(
+                        dpg.mvNodeCol_Link,
+                        self.graph.nodes[edge[0]]['color'],
+                        category=dpg.mvThemeCat_Nodes)
+                    self.dpg_edge_theme_color[edge] = theme_color
+                    dpg.bind_item_theme(edge_id, theme_id)
 
     def cb_resize(self, sender, app_data):
         """
         callback function for window resized (Dear PyGui)
         change node editer size
-        """    
+        """
 
         window_width = app_data[2]
         window_height = app_data[3]
         dpg.set_item_width(self.window_id, window_width)
         dpg.set_item_height(self.window_id, window_height)
 
-
     def cb_node_clicked(self, sender, app_data):
         """
         change connedted node color
         restore node color when re-clicked
         """
-        color_pub = [64, 0, 0]
-        color_sub = [ 0, 64, 0]
-        color_def = [64, 64, 64]
-        color_edge = [196, 196, 196]
         node_id = app_data[1]
         selected_node_name = [k for k, v in self.dpg_node_id_dict.items() if v == node_id][0]
 
-        for node_name in self.node_selected_dict:
-            publishing_edge_list = [e for e in self.G.edges if node_name in e[0]]
-            publishing_edge_subscribing_node_name_list = [e[1] for e in self.G.edges if e[0] == node_name]
-            subscribing_edge_list = [e for e in self.G.edges if node_name in e[1]]
-            subscribing_edge_publishing_node_name_list = [e[0] for e in self.G.edges if e[1] == node_name]
+        for node_name, _ in self.node_selected_dict.items():
+            publishing_edge_list = [e for e in self.graph.edges if node_name in e[0]]
+            publishing_edge_subscribing_node_name_list = \
+                [e[1] for e in self.graph.edges if e[0] == node_name]
+            subscribing_edge_list = [e for e in self.graph.edges if node_name in e[1]]
+            subscribing_edge_publishing_node_name_list = \
+                [e[0] for e in self.graph.edges if e[1] == node_name]
             if self.node_selected_dict[node_name]:
-                ''' Disable highlight for all the other nodes'''
+                # Disable highlight for all the other nodes#
                 self.node_selected_dict[node_name] = False
                 for edge_name in publishing_edge_list:
-                    dpg.set_value(self.dpg_edge_theme_color[edge_name], self.G.nodes[node_name]['color'])
+                    dpg.set_value(
+                        self.dpg_edge_theme_color[edge_name],
+                        self.graph.nodes[node_name]['color'])
                 for pub_node_name in publishing_edge_subscribing_node_name_list:
-                    dpg.set_value(self.dpg_node_theme_color[pub_node_name], color_def)
+                    dpg.set_value(
+                        self.dpg_node_theme_color[pub_node_name],
+                        self.COLOR_HIGHLIGHT_DEF)
                 for edge_name in subscribing_edge_list:
-                    dpg.set_value(self.dpg_edge_theme_color[edge_name], self.G.nodes[node_name]['color'])  # todo. incorrect color
+                    dpg.set_value(
+                        self.dpg_edge_theme_color[edge_name],
+                        self.graph.nodes[node_name]['color'])  # todo. incorrect color
                 for sub_node_name in subscribing_edge_publishing_node_name_list:
-                    dpg.set_value(self.dpg_node_theme_color[sub_node_name], color_def)
+                    dpg.set_value(
+                        self.dpg_node_theme_color[sub_node_name],
+                        self.COLOR_HIGHLIGHT_DEF)
 
             elif selected_node_name == node_name:
-                ''' Enable highlight for the selected node '''
+                # Enable highlight for the selected node #
                 self.node_selected_dict[node_name] = True
                 for edge_name in publishing_edge_list:
-                    dpg.set_value(self.dpg_edge_theme_color[edge_name], color_edge)
+                    dpg.set_value(
+                        self.dpg_edge_theme_color[edge_name],
+                        self.COLOR_HIGHLIGHT_EDGE)
                 for pub_node_name in publishing_edge_subscribing_node_name_list:
-                    dpg.set_value(self.dpg_node_theme_color[pub_node_name], color_pub)
+                    dpg.set_value(
+                        self.dpg_node_theme_color[pub_node_name],
+                        self.COLOR_HIGHLIGHT_PUB)
                 for edge_name in subscribing_edge_list:
-                    dpg.set_value(self.dpg_edge_theme_color[edge_name], color_edge)
+                    dpg.set_value(
+                        self.dpg_edge_theme_color[edge_name],
+                        self.COLOR_HIGHLIGHT_EDGE)
                 for sub_node_name in subscribing_edge_publishing_node_name_list:
-                    dpg.set_value(self.dpg_node_theme_color[sub_node_name], color_sub)
-
+                    dpg.set_value(
+                        self.dpg_node_theme_color[sub_node_name],
+                        self.COLOR_HIGHLIGHT_SUB)
 
     def cb_wheel(self, sender, app_data):
         """
@@ -261,7 +312,9 @@ class Networkx2DearPyGui:
         # Save current layout in normalized coordinate
         for node_name, node_id in self.dpg_node_id_dict.items():
             pos = dpg.get_item_pos(node_id)
-            self.G.nodes[node_name]['pos'] = [pos[0] / self.zoom_config[self.zoom_level][1], pos[1] / self.zoom_config[self.zoom_level][2]]
+            self.graph.nodes[node_name]['pos'] = [
+                pos[0] / self.zoom_config[self.zoom_level][1],
+                pos[1] / self.zoom_config[self.zoom_level][2]]
 
         if app_data > 0:
             if self.zoom_level < len(self.zoom_config) - 1:
@@ -270,14 +323,13 @@ class Networkx2DearPyGui:
             if self.zoom_level > 0:
                 self.zoom_level -= 1
 
-
         # Update node position and font size according to new zoom level
         for node_name, node_id in self.dpg_node_id_dict.items():
-            pos = self.G.nodes[node_name]['pos']
-            pos[0], pos[1] = pos[0] * self.zoom_config[self.zoom_level][1], pos[1] * self.zoom_config[self.zoom_level][2]
+            pos = self.graph.nodes[node_name]['pos']
+            pos[0] = pos[0] * self.zoom_config[self.zoom_level][1]
+            pos[1] = pos[1] * self.zoom_config[self.zoom_level][2]
             dpg.set_item_pos(node_id, pos)
         self.update_font()
-
 
     def update_font(self):
         """
@@ -286,13 +338,13 @@ class Networkx2DearPyGui:
         for node_id in self.dpg_node_id_dict.values():
             dpg.bind_item_font(node_id, self.zoom_config[self.zoom_level][0])
 
-
     def make_zoom_table(self, font_path, window_width: int, window_height: int):
+        """Make zoom table"""
         with dpg.font_registry():
             for i in range(7, 20):
                 try:
                     self.font_list[i] = dpg.add_font(font_path, i)
-                except:
+                except SystemError:
                     print('Failed to load font')
         self.zoom_config.append([self.font_list[10], window_width * 0.20, window_height * 0.20])
         self.zoom_config.append([self.font_list[10], window_width * 0.25, window_height * 0.25])
@@ -325,14 +377,18 @@ class Networkx2DearPyGui:
 
 
 if __name__ == '__main__':
-    G = nx.DiGraph()
-    nx.add_path(G, ['3', '5', '4', '1', '0', '2'])
-    nx.add_path(G, ['3', '0', '4', '2', '1', '5'])
-    layout = nx.spring_layout(G)
-    for key, val in layout.items():
-        G.nodes[key]['pos'] = list(val)
-    app_setting = {
-        "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf"
-    }
-    Networkx2DearPyGui(app_setting, G)
+    def local_main():
+        """main function for this file"""
+        graph = nx.DiGraph()
+        nx.add_path(graph, ['3', '5', '4', '1', '0', '2'])
+        nx.add_path(graph, ['3', '0', '4', '2', '1', '5'])
+        layout = nx.spring_layout(graph)
+        for key, val in layout.items():
+            graph.nodes[key]['pos'] = list(val)
+            graph.nodes[key]['color'] = [128, 128, 128]
+        app_setting = {
+            "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf"
+        }
+        Networkx2DearPyGui(app_setting, graph)
 
+    local_main()

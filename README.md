@@ -1,4 +1,4 @@
-# Dear Ros Node Viewer
+# Dear ROS Node Viewer
 ROS2 node viewer using Dear PyGui 
 
 ```sh

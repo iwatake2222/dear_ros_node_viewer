@@ -11,22 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Main function for Dear ROS Node Viewer
+"""
+
 from __future__ import annotations
 import os
 import argparse
 import json
 import numpy as np
 import networkx as nx
-import dearpygui.dearpygui as dpg
-from . import caret2networkx
-from . import networkx2dearpygui
 
-"""
-Main function for Dear Ros Node Viewer
-"""
+from dear_ros_node_viewer.caret2networkx import caret2networkx
+from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
 
-def normalize_layout(layout: dict[str,tuple[int,int]]):
+def normalize_layout(layout: dict[str, tuple[int, int]]):
     """
     Normalize positions to [0.0, 1.0] (left-top = (0, 0))
 
@@ -57,14 +57,14 @@ def normalize_layout(layout: dict[str,tuple[int,int]]):
     return layout
 
 
-def place_node(G: nx.classes.digraph.DiGraph, group_name: str, prog: str = 'dot'):
+def place_node(graph: nx.classes.digraph.DiGraph, group_name: str, prog: str = 'dot'):
     """
     Place nodes belonging to group.
-    Normalized position [x, y] is set to G.nodes[node]['pos']
+    Normalized position [x, y] is set to graph.nodes[node]['pos']
 
     Parameters
     ----------
-    G: nx.classes.digraph.DiGraph
+    graph: nx.classes.digraph.DiGraph
         NetworkX Graph
     group_name: str
         group name
@@ -79,31 +79,32 @@ def place_node(G: nx.classes.digraph.DiGraph, group_name: str, prog: str = 'dot'
         Dictionary of normalized positions keyed by node.
     """
 
-    H = nx.DiGraph()
-    for node_name in G.nodes:
+    graph_modified = nx.DiGraph()
+    for node_name in graph.nodes:
         if group_name in node_name:
-            H.add_node(node_name)
-    for edge in G.edges:
+            graph_modified.add_node(node_name)
+    for edge in graph.edges:
         if group_name in edge[0] and group_name in edge[1]:
-            H.add_edge(edge[0], edge[1])
-    layout = nx.nx_pydot.pydot_layout(H, prog=prog)
+            graph_modified.add_edge(edge[0], edge[1])
+    layout = nx.nx_pydot.pydot_layout(graph_modified, prog=prog)
     layout = normalize_layout(layout)
     return layout
 
 
-def place_node_by_group(G, group_setting):
+def place_node_by_group(graph, group_setting):
     """
     Place all nodes
-    Nodes belonging to the same group are placed in the same area. The area is specified in group_setting.group_setting
+    Nodes belonging to the same group are placed in the same area.
+    The area is specified in group_setting.group_setting
     """
 
-    # for node_name in G.nodes:
-        # G.nodes[node_name]['pos'] = [0, 0]
-        # G.nodes[node_name]['color'] = [128, 128, 128]
+    # for node_name in graph.nodes:
+    #     graph.nodes[node_name]['pos'] = [0, 0]
+    #     graph.nodes[node_name]['color'] = [128, 128, 128]
 
-    ''' Add "__other__" if a node doesn't belong to any group to make process easier '''
+    # Add "__other__" if a node doesn't belong to any group to make process easier #
     mapping_list = {}
-    for node_name in G.nodes:
+    for node_name in graph.nodes:
         is_other_node = True
         for group_name in group_setting.keys():
             if group_name in node_name:
@@ -112,30 +113,32 @@ def place_node_by_group(G, group_setting):
             mapping_list[node_name] = '"' + '__others__' + node_name.strip('"') + '"'
         else:
             mapping_list[node_name] = node_name
-    G = nx.relabel_nodes(G, mapping_list)
+    graph = nx.relabel_nodes(graph, mapping_list)
 
-    ''' Place nodes and add properties into G '''
-    for group_name, property in group_setting.items():
-        layout = place_node(G, group_name)
-        direction = property['direction']
-        offset = property['offset']
-        color = property['color']
+    # Place nodes and add properties into graph #
+    for group_name, graph_property in group_setting.items():
+        layout = place_node(graph, group_name)
+        direction = graph_property['direction']
+        offset = graph_property['offset']
+        color = graph_property['color']
 
-        for node_name in G.nodes:
+        for node_name in graph.nodes:
             if group_name in node_name:
                 pos = layout[node_name]
-                pos[1] = 1 - pos[1] # 0.0 is top, 1.0 is bottom
+                pos[1] = 1 - pos[1]     # 0.0 is top, 1.0 is bottom
                 if direction == 'horizontal':
-                    G.nodes[node_name]['pos'] = [offset[0] + pos[1] * offset[2], offset[1] + pos[0] * offset[3]]
+                    graph.nodes[node_name]['pos'] = \
+                        [offset[0] + pos[1] * offset[2], offset[1] + pos[0] * offset[3]]
                 else:
-                    G.nodes[node_name]['pos'] = [offset[0] + pos[0] * offset[2], offset[1] + pos[1] * offset[3]]
-                G.nodes[node_name]['color'] = color
+                    graph.nodes[node_name]['pos'] = \
+                        [offset[0] + pos[0] * offset[2], offset[1] + pos[1] * offset[3]]
+                graph.nodes[node_name]['color'] = color
 
-    ''' Remove "__other__" '''
+    # Remove "__other__" #
     mapping_list_swap = {v: k for k, v in mapping_list.items()}
-    G = nx.relabel_nodes(G, mapping_list_swap)
+    graph = nx.relabel_nodes(graph, mapping_list_swap)
 
-    return G
+    return graph
 
 
 def load_setting_json(setting_file):
@@ -145,8 +148,8 @@ def load_setting_json(setting_file):
     """
 
     if os.path.isfile(setting_file):
-        with open(setting_file) as f:
-            setting = json.load(f)
+        with open(setting_file, encoding='UTF-8') as f_setting:
+            setting = json.load(f_setting)
         app_setting = setting['app_setting']
         group_setting = setting['group_setting']
     else:
@@ -165,20 +168,25 @@ def load_setting_json(setting_file):
 
 def main():
     """
-    Main function for Dear Ros Node Viewer
+    Main function for Dear ROS Node Viewer
     """
-    parser = argparse.ArgumentParser(description='Visualize Node Diagram using Architecture File Created by CARET')
-    parser.add_argument('--architecture_yaml_file', type=str, default='architecture.yaml', help='Architecture (yaml) file path. default=architecture.yaml')
-    parser.add_argument('--target_path', type=str, default='all_graph', help='Specify path to be loaded. default=all_graph')
-    parser.add_argument('--setting_file', type=str, default='setting.json', help='default=setting.json')
+    parser = argparse.ArgumentParser(
+        description='Visualize Node Diagram using Architecture File Created by CARET')
+    parser.add_argument(
+        '--architecture_yaml_file', type=str, default='architecture.yaml',
+        help='Architecture (yaml) file path. default=architecture.yaml')
+    parser.add_argument(
+        '--target_path', type=str, default='all_graph',
+        help='Specify path to be loaded. default=all_graph')
+    parser.add_argument(
+        '--setting_file', type=str, default='setting.json',
+        help='default=setting.json')
     args = parser.parse_args()
 
     app_setting, group_setting = load_setting_json(args.setting_file)
 
-    G = caret2networkx.caret2networkx(args.architecture_yaml_file, args.target_path)
-    G = place_node_by_group(G, group_setting)
+    graph = caret2networkx(args.architecture_yaml_file, args.target_path)
+    graph = place_node_by_group(graph, group_setting)
 
-    
-    graph_size = [int(app_setting['window_size'][0] * 0.8), int(app_setting['window_size'][1] * 0.8)]
-
-    networkx2dearpygui.Networkx2DearPyGui(app_setting, G, app_setting['window_size'][0], app_setting['window_size'][1])
+    Networkx2DearPyGui(
+        app_setting, graph, app_setting['window_size'][0], app_setting['window_size'][1])
