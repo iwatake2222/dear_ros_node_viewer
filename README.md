@@ -36,9 +36,9 @@ python3 -m pylint ./dear_ros_node_viewer
 - [x] +/- font size
     - [x] impl
     - [x] menu
-- [ ] Omitted name
-    - [ ] full / first + last / last only
-    - [ ] impl
+- [x] Omitted name
+    - [x] full / first + last / last only
+    - [x] impl
     - [x] menu
 - [ ] Read dot file
 - [ ] Current ROS node graph

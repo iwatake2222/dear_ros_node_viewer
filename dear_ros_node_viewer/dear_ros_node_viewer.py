@@ -39,6 +39,8 @@ def align_layout(graph):
     layout_min, layout_max = layout_np.min(0), layout_np.max(0)
     offset_x = (layout_max[0] + layout_min[0]) / 2
     offset_y = (layout_max[1] + layout_min[1]) / 2
+    offset_x -= 2 / (layout_max[0] - layout_min[0])
+    offset_y -= 2 / (layout_max[1] - layout_min[1])
     if offset_x == 0 or offset_y == 0:
         return graph
     for node_name in graph.nodes:
