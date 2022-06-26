@@ -23,6 +23,7 @@ import numpy as np
 import networkx as nx
 
 from dear_ros_node_viewer.caret2networkx import caret2networkx
+from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
 
@@ -39,8 +40,8 @@ def align_layout(graph):
     layout_min, layout_max = layout_np.min(0), layout_np.max(0)
     offset_x = (layout_max[0] + layout_min[0]) / 2
     offset_y = (layout_max[1] + layout_min[1]) / 2
-    offset_x -= 2 / (layout_max[0] - layout_min[0])
-    offset_y -= 2 / (layout_max[1] - layout_min[1])
+    # offset_x -= 2 / (layout_max[0] - layout_min[0])
+    # offset_y -= 2 / (layout_max[1] - layout_min[1])
     if offset_x == 0 or offset_y == 0:
         return graph
     for node_name in graph.nodes:
@@ -196,8 +197,8 @@ def main():
     parser = argparse.ArgumentParser(
         description='Visualize Node Diagram using Architecture File Created by CARET')
     parser.add_argument(
-        '--architecture_yaml_file', type=str, default='architecture.yaml',
-        help='Architecture (yaml) file path. default=architecture.yaml')
+        '--graph_file', type=str, default='architecture.yaml',
+        help='graph file path (architecture.yaml(CARETw) or rosgraph.dot(rqt_graph))')
     parser.add_argument(
         '--target_path', type=str, default='all_graph',
         help='Specify path to be loaded. default=all_graph')
@@ -208,7 +209,14 @@ def main():
 
     app_setting, group_setting = load_setting_json(args.setting_file)
 
-    graph = caret2networkx(args.architecture_yaml_file, args.target_path)
+    if '.yaml' in args.graph_file:
+        graph = caret2networkx(args.graph_file, args.target_path)
+    elif '.dot' in args.graph_file:
+        graph = dot2networkx(args.graph_file)
+    else:
+        print('Unknown file format: {args.graph_file}')
+        return
+
     graph = place_node_by_group(graph, group_setting)
     graph = align_layout(graph)
 

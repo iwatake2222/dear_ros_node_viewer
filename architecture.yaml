@@ -1,0 +1,223 @@
+named_paths:
+- path_name: target_path_0
+  node_chain:
+  - node_name: /node_src
+    publish_topic_name: /topic_src
+    subscribe_topic_name: UNDEFINED
+  - node_name: /node_src_0
+    publish_topic_name: /topic_src_0
+    subscribe_topic_name: /topic_src
+  - node_name: /node_sub3pub1
+    publish_topic_name: /topic_sub3pub1
+    subscribe_topic_name: /topic_src_0
+  - node_name: /node_dst
+    publish_topic_name: UNDEFINED
+    subscribe_topic_name: /topic_sub3pub1
+- path_name: target_path_1
+  node_chain:
+  - node_name: /node_src
+    publish_topic_name: /topic_src
+    subscribe_topic_name: UNDEFINED
+  - node_name: /node_src_1
+    publish_topic_name: /topic_src_1
+    subscribe_topic_name: /topic_src
+  - node_name: /node_sub3pub1
+    publish_topic_name: /topic_sub3pub1
+    subscribe_topic_name: /topic_src_1
+  - node_name: /node_dst
+    publish_topic_name: UNDEFINED
+    subscribe_topic_name: /topic_sub3pub1
+- path_name: target_path_2
+  node_chain:
+  - node_name: /node_src
+    publish_topic_name: /topic_src
+    subscribe_topic_name: UNDEFINED
+  - node_name: /node_src_2
+    publish_topic_name: /topic_src_2
+    subscribe_topic_name: /topic_src
+  - node_name: /node_sub3pub1
+    publish_topic_name: /topic_sub3pub1
+    subscribe_topic_name: /topic_src_2
+  - node_name: /node_dst
+    publish_topic_name: UNDEFINED
+    subscribe_topic_name: /topic_sub3pub1
+executors:
+- executor_type: multi_threaded_executor
+  executor_name: executor_0
+  callback_group_names:
+  - /node_dst/callback_group_0
+  - /node_src/callback_group_0
+  - /node_src_0/callback_group_0
+  - /node_src_1/callback_group_0
+  - /node_src_2/callback_group_0
+  - /node_sub3pub1/callback_group_0
+nodes:
+- node_name: /node_dst
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /node_dst/callback_group_0
+    callback_names:
+    - /node_dst/callback_0
+  callbacks:
+  - callback_name: /node_dst/callback_0
+    callback_type: subscription_callback
+    topic_name: /topic_sub3pub1
+    symbol: SampleNode::NodeSub::NodeSub(std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, int)::{lambda(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >)#1}
+  subscribes:
+  - topic_name: /topic_sub3pub1
+    callback_name: /node_dst/callback_0
+- node_name: /node_src
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /node_src/callback_group_0
+    callback_names:
+    - /node_src/callback_0
+  callbacks:
+  - callback_name: /node_src/callback_0
+    callback_type: timer_callback
+    period_ns: 20000000
+    symbol: SampleNode::NodePub::NodePub(std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, int, int)::{lambda()#1}
+  publishes:
+  - topic_name: /topic_src
+    callback_names:
+    - /node_src/callback_0
+- node_name: /node_src_0
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /node_src_0/callback_group_0
+    callback_names:
+    - /node_src_0/callback_0
+  callbacks:
+  - callback_name: /node_src_0/callback_0
+    callback_type: subscription_callback
+    topic_name: /topic_src
+    symbol: SampleNode::NodeSubPub::NodeSubPub(std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, int)::{lambda(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >)#1}
+  publishes:
+  - topic_name: /topic_src_0
+    callback_names:
+    - /node_src_0/callback_0
+  subscribes:
+  - topic_name: /topic_src
+    callback_name: /node_src_0/callback_0
+  message_contexts:
+  - context_type: callback_chain
+    subscription_topic_name: /topic_src
+    publisher_topic_name: /topic_src_0
+    callbacks:
+    - /node_src_0/callback_0
+- node_name: /node_src_1
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /node_src_1/callback_group_0
+    callback_names:
+    - /node_src_1/callback_0
+  callbacks:
+  - callback_name: /node_src_1/callback_0
+    callback_type: subscription_callback
+    topic_name: /topic_src
+    symbol: SampleNode::NodeSubPub::NodeSubPub(std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, int)::{lambda(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >)#1}
+  publishes:
+  - topic_name: /topic_src_1
+    callback_names:
+    - /node_src_1/callback_0
+  subscribes:
+  - topic_name: /topic_src
+    callback_name: /node_src_1/callback_0
+  message_contexts:
+  - context_type: callback_chain
+    subscription_topic_name: /topic_src
+    publisher_topic_name: /topic_src_1
+    callbacks:
+    - /node_src_1/callback_0
+- node_name: /node_src_2
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /node_src_2/callback_group_0
+    callback_names:
+    - /node_src_2/callback_0
+  callbacks:
+  - callback_name: /node_src_2/callback_0
+    callback_type: subscription_callback
+    topic_name: /topic_src
+    symbol: SampleNode::NodeSubPub::NodeSubPub(std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, std::__cxx11::basic_string<char, std::char_traits<char>,
+      std::allocator<char> >, int)::{lambda(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >)#1}
+  publishes:
+  - topic_name: /topic_src_2
+    callback_names:
+    - /node_src_2/callback_0
+  subscribes:
+  - topic_name: /topic_src
+    callback_name: /node_src_2/callback_0
+  message_contexts:
+  - context_type: callback_chain
+    subscription_topic_name: /topic_src
+    publisher_topic_name: /topic_src_2
+    callbacks:
+    - /node_src_2/callback_0
+- node_name: /node_sub3pub1
+  callback_groups:
+  - callback_group_type: mutually_exclusive
+    callback_group_name: /node_sub3pub1/callback_group_0
+    callback_names:
+    - /node_sub3pub1/callback_0
+    - /node_sub3pub1/callback_1
+    - /node_sub3pub1/callback_2
+  callbacks:
+  - callback_name: /node_sub3pub1/callback_0
+    callback_type: subscription_callback
+    topic_name: /topic_src_0
+    symbol: std::_Bind<void (SampleNode::NodeSub3Pub1::*(SampleNode::NodeSub3Pub1*,
+      std::_Placeholder<1>, int))(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >, int)>
+  - callback_name: /node_sub3pub1/callback_1
+    callback_type: subscription_callback
+    topic_name: /topic_src_1
+    symbol: std::_Bind<void (SampleNode::NodeSub3Pub1::*(SampleNode::NodeSub3Pub1*,
+      std::_Placeholder<1>, int))(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >, int)>
+  - callback_name: /node_sub3pub1/callback_2
+    callback_type: subscription_callback
+    topic_name: /topic_src_2
+    symbol: std::_Bind<void (SampleNode::NodeSub3Pub1::*(SampleNode::NodeSub3Pub1*,
+      std::_Placeholder<1>, int))(std::unique_ptr<std_msgs::msg::Int32_<std::allocator<void>
+      >, std::default_delete<std_msgs::msg::Int32_<std::allocator<void> > > >, int)>
+  variable_passings:
+  - callback_name_write: UNDEFINED
+    callback_name_read: UNDEFINED
+  publishes:
+  - topic_name: /topic_sub3pub1
+    callback_names:
+    - UNDEFINED
+  subscribes:
+  - topic_name: /topic_src_0
+    callback_name: /node_sub3pub1/callback_0
+  - topic_name: /topic_src_1
+    callback_name: /node_sub3pub1/callback_1
+  - topic_name: /topic_src_2
+    callback_name: /node_sub3pub1/callback_2
+  message_contexts:
+  - context_type: use_latest_message
+    subscription_topic_name: /topic_src_0
+    publisher_topic_name: /topic_sub3pub1
+  - context_type: use_latest_message
+    subscription_topic_name: /topic_src_1
+    publisher_topic_name: /topic_sub3pub1
+  - context_type: use_latest_message
+    subscription_topic_name: /topic_src_2
+    publisher_topic_name: /topic_sub3pub1

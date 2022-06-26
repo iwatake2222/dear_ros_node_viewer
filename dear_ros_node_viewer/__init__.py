@@ -18,10 +18,12 @@ __init__
 
 from dear_ros_node_viewer.dear_ros_node_viewer import main
 from dear_ros_node_viewer.caret2networkx import caret2networkx
+from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
 __all__ = [
     'main',
     'caret2networkx',
+    'dot2networkx',
     'Networkx2DearPyGui'
 ]
