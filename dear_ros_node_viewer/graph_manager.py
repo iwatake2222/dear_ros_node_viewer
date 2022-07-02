@@ -15,7 +15,6 @@
 from __future__ import annotations
 from enum import Enum
 import textwrap
-import numpy as np
 import networkx as nx
 import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.caret2networkx import caret2networkx
@@ -45,12 +44,11 @@ class GraphManager:
     node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
 
     # bind list to components in PyGui
-    dpg_node_id_dict: dict[str, int] = {}       # {"node_name": id}
-    dpg_node_color_dict: dict[str, int] = {}    # {"node_name": id}
-    dpg_nodeedge_id_dict: dict[str, int] = {}   # {"nodename_edgename": id}
-    dpg_nodeedge_text_dict: dict[str, int] = {} # {"nodename_edgename": id}
-    dpg_edge_color_dict: dict[str, int] = {}    # {"edge": id}
-
+    dpg_node_id_dict: dict[str, int] = {}        # {"node_name": id}
+    dpg_node_color_dict: dict[str, int] = {}     # {"node_name": id}
+    dpg_nodeedge_id_dict: dict[str, int] = {}    # {"nodename_edgename": id}
+    dpg_nodeedge_text_dict: dict[str, int] = {}  # {"nodename_edgename": id}
+    dpg_edge_color_dict: dict[str, int] = {}     # {"edge": id}
 
     def __init__(self, group_setting):
         self.group_setting = group_setting
@@ -63,7 +61,6 @@ class GraphManager:
         for node_name in self.graph.nodes:
             self.node_selected_dict[node_name] = False
 
-
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
         self.graph = dot2networkx(filename)
@@ -74,8 +71,7 @@ class GraphManager:
 
     def load_graph_from_running_ros(self):
         """ load_graph_from_running_ros """
-        pass
-
+        print('not implemented yet')
 
     def add_dpg_node_id(self, node_name, dpg_id):
         """ Add association b/w node_name and dpg_id """
@@ -162,7 +158,8 @@ class GraphManager:
             self.graph_size = list(map(lambda val: val * 1.1, self.graph_size))
         else:
             self.graph_size = list(map(lambda val: val * 0.9, self.graph_size))
-        scale = self.graph_size[0] / previous_graph_size[0], self.graph_size[1] / previous_graph_size[1]
+        scale = (self.graph_size[0] / previous_graph_size[0],
+                 self.graph_size[1] / previous_graph_size[1])
 
         for _, node_id in self.dpg_node_id_dict.items():
             pos = dpg.get_item_pos(node_id)
@@ -179,7 +176,7 @@ class GraphManager:
     def update_font(self, font):
         """ Update font used in all nodes according to current font size """
         for node_id in self.dpg_node_id_dict.values():
-                dpg.bind_item_font(node_id, font)
+            dpg.bind_item_font(node_id, font)
 
     def update_nodename(self, omit_type: OmitType):
         """ Update node name """
@@ -212,4 +209,3 @@ class GraphManager:
             display_name = textwrap.fill(display_name, 40)
 
         return display_name
-

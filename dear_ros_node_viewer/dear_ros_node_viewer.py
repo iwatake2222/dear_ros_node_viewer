@@ -19,8 +19,6 @@ from __future__ import annotations
 import os
 import argparse
 import json
-import numpy as np
-import networkx as nx
 
 from dear_ros_node_viewer.graph_manager import GraphManager
 from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
@@ -73,13 +71,11 @@ def main():
     if '.yaml' in args.graph_file:
         graph_manager.load_graph_from_caret(args.graph_file, args.target_path)
     elif '.dot' in args.graph_file:
-        graph_manager.load_graph_from_dots(args.graph_file)
+        graph_manager.load_graph_from_dot(args.graph_file)
     else:
         print('Unknown file format: {args.graph_file}')
         return
 
-
     dpg = Networkx2DearPyGui(
         app_setting, graph_manager, app_setting['window_size'][0], app_setting['window_size'][1])
     dpg.start()
-

@@ -37,8 +37,8 @@ class Networkx2DearPyGui:
         self.window_size: list[int] = [window_width, window_height]
         self.font_size: int = 15
         self.font_list: dict[int, int] = {}
-        self.dpg_id_nodeeditor: int = -1
-
+        self.dpg_window_id: int = -1
+        self.dpg_id_editor: int = -1
 
     def start(self):
         """ Start Dear PyGui context """
@@ -49,7 +49,7 @@ class Networkx2DearPyGui:
         with dpg.window(
                 width=self.window_size[0], height=self.window_size[1],
                 no_collapse=True, no_title_bar=True, no_move=True,
-                no_resize=True) as self.window_id:
+                no_resize=True) as self.dpg_window_id:
 
             self.add_menu_in_dpg()
 
@@ -69,16 +69,17 @@ class Networkx2DearPyGui:
         dpg.destroy_context()
 
     def update_node_editor(self, graph_manager=None):
+        """ Update node editor using new Graph Manager """
         if graph_manager:
             self.graph_manager = graph_manager
 
-        if self.dpg_id_nodeeditor != -1:
-            dpg.delete_item(self.dpg_id_nodeeditor)
+        if self.dpg_id_editor != -1:
+            dpg.delete_item(self.dpg_id_editor)
 
-        with dpg.window(tag=self.window_id):
+        with dpg.window(tag=self.dpg_window_id):
             with dpg.node_editor(
                     menubar=False, minimap=True,
-                    minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_nodeeditor:
+                    minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_editor:
                 self.add_node_in_dpg()
                 self.add_link_in_dpg()
 
@@ -109,7 +110,6 @@ class Networkx2DearPyGui:
                 dpg.add_menu_item(label="First + Last", callback=self._cb_menu_edgename_firstlast)
                 dpg.add_menu_item(label="Last Only", callback=self._cb_menu_edgename_last)
 
-
     def add_node_in_dpg(self):
         """ Add nodes and attributes """
         graph = self.graph_manager.graph
@@ -119,7 +119,7 @@ class Networkx2DearPyGui:
             pos = [
                 pos[0] * self.graph_manager.graph_size[0],
                 pos[1] * self.graph_manager.graph_size[1]]
-            
+
             # Allocate node
             with dpg.node(label=node_name, pos=pos) as node_id:
                 # Save node id
@@ -150,15 +150,15 @@ class Networkx2DearPyGui:
                 # Add text for node I/O(topics)
                 self.add_node_attr_in_dpg(graph, node_name)
 
-                # ToDo: Add text for executor/callbackgroups
+                # Add text for executor/callbackgroups
 
         self.graph_manager.update_nodename(GraphManager.OmitType.FIRST_LAST)
         self.graph_manager.update_edgename(GraphManager.OmitType.LAST)
 
-
     def add_node_attr_in_dpg(self, graph, node_name):
-        added_edge_list_pub =[]     # to check to avoid adding duplicated topic
-        added_edge_list_sub =[]
+        """ Add attributes in node """
+        added_edge_list_pub = []     # to check to avoid adding duplicated topic
+        added_edge_list_sub = []
         for edge in graph.edges:
             is_pub = None
             if edge[0] == node_name:
@@ -174,10 +174,10 @@ class Networkx2DearPyGui:
                     continue
                 added_edge_list_sub.append(label)
             if is_pub is not None:
-                with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output if is_pub else dpg.mvNode_Attr_Input) as attr_id:
+                with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output
+                                        if is_pub else dpg.mvNode_Attr_Input) as attr_id:
                     text_id = dpg.add_text(default_value=label)
                     self.graph_manager.add_dpg_nodeedge_idtext(node_name, label, attr_id, text_id)
-
 
     def add_link_in_dpg(self, ):
         """ Add links between node I/O """
@@ -203,7 +203,6 @@ class Networkx2DearPyGui:
                     self.graph_manager.add_dpg_edge_color(edge, theme_color)
                     dpg.bind_item_theme(edge_id, theme_id)
 
-
     def _cb_resize(self, sender, app_data):
         """
         callback function for window resized (Dear PyGui)
@@ -211,9 +210,8 @@ class Networkx2DearPyGui:
         """
         window_width = app_data[2]
         window_height = app_data[3]
-        dpg.set_item_width(self.window_id, window_width)
-        dpg.set_item_height(self.window_id, window_height)
-
+        dpg.set_item_width(self.dpg_window_id, window_width)
+        dpg.set_item_height(self.dpg_window_id, window_height)
 
     def _cb_node_clicked(self, sender, app_data):
         """
@@ -222,7 +220,6 @@ class Networkx2DearPyGui:
         """
         node_id = app_data[1]
         self.graph_manager.high_light_node(node_id)
-
 
     def _cb_wheel(self, sender, app_data):
         """
