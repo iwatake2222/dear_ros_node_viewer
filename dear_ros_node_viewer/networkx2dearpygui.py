@@ -92,7 +92,7 @@ class Networkx2DearPyGui:
                 dpg.add_menu_item(label="Load", callback=self._cb_menu_layout_load)
 
             with dpg.menu(label="Graph"):
-                dpg.add_menu_item(label="Current ROS (experimental)",
+                dpg.add_menu_item(label="Running ROS (experimental)",
                                   callback=self._cb_menu_graph_current)
 
             with dpg.menu(label="Font"):
@@ -242,7 +242,8 @@ class Networkx2DearPyGui:
 
     def _cb_menu_graph_current(self, sender, app_data, user_data):
         """ Update graph using current ROS status """
-        print('not implemented yet')
+        self.graph_manager.load_graph_from_running_ros()
+        self.update_node_editor()
 
     def _cb_menu_font_size(self, sender, app_data, user_data):
         """ Change font size """

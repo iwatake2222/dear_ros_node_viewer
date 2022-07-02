@@ -19,17 +19,12 @@ import networkx as nx
 import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.caret2networkx import caret2networkx
 from dear_ros_node_viewer.dot2networkx import dot2networkx
-from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
+from dear_ros_node_viewer.ros2networkx import Ros2Networkx
+from dear_ros_node_viewer.graph_layout import place_node_by_group
 
 
 class GraphManager:
     """ Binding Graph and GUI components"""
-
-    class OmitType(Enum):
-        """Name omission type"""
-        FULL = 1
-        FIRST_LAST = 2
-        LAST = 3
 
     # Color definitions
     COLOR_HIGHLIGHT_PUB = [0, 64, 0]
@@ -37,64 +32,87 @@ class GraphManager:
     COLOR_HIGHLIGHT_DEF = [64, 64, 64]
     COLOR_HIGHLIGHT_EDGE = [196, 196, 196]
 
-    # Instance variables
-    graph_size: list[int] = [1920, 1080]
-    graph: nx.DiGraph
-    group_setting: dict
-    node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
-
-    # bind list to components in PyGui
-    dpg_node_id_dict: dict[str, int] = {}        # {"node_name": id}
-    dpg_node_color_dict: dict[str, int] = {}     # {"node_name": id}
-    dpg_nodeedge_id_dict: dict[str, int] = {}    # {"nodename_edgename": id}
-    dpg_nodeedge_text_dict: dict[str, int] = {}  # {"nodename_edgename": id}
-    dpg_edge_color_dict: dict[str, int] = {}     # {"edge": id}
+    class OmitType(Enum):
+        """Name omission type"""
+        FULL = 1
+        FIRST_LAST = 2
+        LAST = 3
 
     def __init__(self, group_setting):
         self.group_setting = group_setting
+        self.graph_size: list[int] = [1920, 1080]
+        self.graph: nx.DiGraph = nx.DiGraph()
+        self.node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
+
+        # bind list to components in PyGui
+        self.dpg_bind = {
+            'node_id': {},        # {"node_name": id}
+            'node_color': {},        # {"node_name": id}
+            'nodeedge_id': {},    # {"nodename_edgename": id}
+            'nodeedge_text': {},  # {"nodename_edgename": id}
+            'edge_color': {},     # {"edge": id}
+        }
 
     def load_graph_from_caret(self, filename: str, target_path: str = 'all_graph'):
         """ load_graph_from_caret """
         self.graph = caret2networkx(filename, target_path)
         self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
-        for node_name in self.graph.nodes:
-            self.node_selected_dict[node_name] = False
+        # self.graph = align_layout(self.graph)
+        self.reset_internl_status()
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
         self.graph = dot2networkx(filename)
         self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
-        for node_name in self.graph.nodes:
-            self.node_selected_dict[node_name] = False
+        # self.graph = align_layout(self.graph)
+        self.reset_internl_status()
 
     def load_graph_from_running_ros(self):
         """ load_graph_from_running_ros """
-        print('not implemented yet')
+        ros2networkx = Ros2Networkx(node_name='temp')
+        ros2networkx.save_graph('temp.dot')
+        ros2networkx.shutdown()
+        self.load_graph_from_dot('temp.dot')
+        for node in self.graph.nodes:
+            if '"/temp"' == node:
+                node_observer = node
+                break
+        self.graph.remove_node(node_observer)
+        self.reset_internl_status()
+
+    def reset_internl_status(self):
+        """ Reset internal status """
+        self.node_selected_dict.clear()
+        for node_name in self.graph.nodes:
+            self.node_selected_dict[node_name] = False
+        self.dpg_bind['node_id'].clear()
+        self.dpg_bind['node_color'].clear()
+        self.dpg_bind['nodeedge_id'].clear()
+        self.dpg_bind['nodeedge_text'].clear()
+        self.dpg_bind['edge_color'].clear()
 
     def add_dpg_node_id(self, node_name, dpg_id):
         """ Add association b/w node_name and dpg_id """
-        self.dpg_node_id_dict[node_name] = dpg_id
+        self.dpg_bind['node_id'][node_name] = dpg_id
 
     def add_dpg_node_color(self, node_name, dpg_id):
         """ Add association b/w node_name and dpg_id """
-        self.dpg_node_color_dict[node_name] = dpg_id
+        self.dpg_bind['node_color'][node_name] = dpg_id
 
     def add_dpg_nodeedge_idtext(self, node_name, edge_name, attr_id, text_id):
         """ Add association b/w node_attr and dpg_id """
         key = self.make_nodeedge_key(node_name, edge_name)
-        self.dpg_nodeedge_id_dict[key] = attr_id
-        self.dpg_nodeedge_text_dict[key] = text_id
+        self.dpg_bind['nodeedge_id'][key] = attr_id
+        self.dpg_bind['nodeedge_text'][key] = text_id
 
     def add_dpg_edge_color(self, edge_name, edge_id):
         """ Add association b/w edge and dpg_id """
-        self.dpg_edge_color_dict[edge_name] = edge_id
+        self.dpg_bind['edge_color'][edge_name] = edge_id
 
     def get_dpg_nodeedge_id(self, node_name, edge_name):
         """ Get association for a selected name """
         key = self.make_nodeedge_key(node_name, edge_name)
-        return self.dpg_nodeedge_id_dict[key]
+        return self.dpg_bind['nodeedge_id'][key]
 
     def make_nodeedge_key(self, node_name, edge_name):
         """create dictionary key for topic attribute in node"""
@@ -102,7 +120,7 @@ class GraphManager:
 
     def high_light_node(self, dpg_id_node):
         """ High light the selected node and connected nodes """
-        selected_node_name = [k for k, v in self.dpg_node_id_dict.items() if v == dpg_id_node][0]
+        selected_node_name = [k for k, v in self.dpg_bind['node_id'].items() if v == dpg_id_node][0]
 
         for node_name, _ in self.node_selected_dict.items():
             publishing_edge_list = [e for e in self.graph.edges if node_name in e[0]]
@@ -116,19 +134,19 @@ class GraphManager:
                 self.node_selected_dict[node_name] = False
                 for edge_name in publishing_edge_list:
                     dpg.set_value(
-                        self.dpg_edge_color_dict[edge_name],
+                        self.dpg_bind['edge_color'][edge_name],
                         self.graph.nodes[node_name]['color'])
                 for pub_node_name in publishing_edge_subscribing_node_name_list:
                     dpg.set_value(
-                        self.dpg_node_color_dict[pub_node_name],
+                        self.dpg_bind['node_color'][pub_node_name],
                         self.COLOR_HIGHLIGHT_DEF)
                 for edge_name in subscribing_edge_list:
                     dpg.set_value(
-                        self.dpg_edge_color_dict[edge_name],
+                        self.dpg_bind['edge_color'][edge_name],
                         self.graph.nodes[node_name]['color'])  # todo. incorrect color
                 for sub_node_name in subscribing_edge_publishing_node_name_list:
                     dpg.set_value(
-                        self.dpg_node_color_dict[sub_node_name],
+                        self.dpg_bind['node_color'][sub_node_name],
                         self.COLOR_HIGHLIGHT_DEF)
 
             elif selected_node_name == node_name:
@@ -136,19 +154,19 @@ class GraphManager:
                 self.node_selected_dict[node_name] = True
                 for edge_name in publishing_edge_list:
                     dpg.set_value(
-                        self.dpg_edge_color_dict[edge_name],
+                        self.dpg_bind['edge_color'][edge_name],
                         self.COLOR_HIGHLIGHT_EDGE)
                 for pub_node_name in publishing_edge_subscribing_node_name_list:
                     dpg.set_value(
-                        self.dpg_node_color_dict[pub_node_name],
+                        self.dpg_bind['node_color'][pub_node_name],
                         self.COLOR_HIGHLIGHT_PUB)
                 for edge_name in subscribing_edge_list:
                     dpg.set_value(
-                        self.dpg_edge_color_dict[edge_name],
+                        self.dpg_bind['edge_color'][edge_name],
                         self.COLOR_HIGHLIGHT_EDGE)
                 for sub_node_name in subscribing_edge_publishing_node_name_list:
                     dpg.set_value(
-                        self.dpg_node_color_dict[sub_node_name],
+                        self.dpg_bind['node_color'][sub_node_name],
                         self.COLOR_HIGHLIGHT_SUB)
 
     def zoom_inout(self, is_zoom_in):
@@ -161,31 +179,31 @@ class GraphManager:
         scale = (self.graph_size[0] / previous_graph_size[0],
                  self.graph_size[1] / previous_graph_size[1])
 
-        for _, node_id in self.dpg_node_id_dict.items():
+        for _, node_id in self.dpg_bind['node_id'].items():
             pos = dpg.get_item_pos(node_id)
             pos = (pos[0] * scale[0], pos[1] * scale[1])
             dpg.set_item_pos(node_id, pos)
 
     def reset_layout(self):
         """ Reset node layout """
-        for node_name, node_id in self.dpg_node_id_dict.items():
+        for node_name, node_id in self.dpg_bind['node_id'].items():
             pos = self.graph.nodes[node_name]['pos']
             pos = (pos[0] * self.graph_size[0], pos[1] * self.graph_size[1])
             dpg.set_item_pos(node_id, pos)
 
     def update_font(self, font):
         """ Update font used in all nodes according to current font size """
-        for node_id in self.dpg_node_id_dict.values():
+        for node_id in self.dpg_bind['node_id'].values():
             dpg.bind_item_font(node_id, font)
 
     def update_nodename(self, omit_type: OmitType):
         """ Update node name """
-        for node_name, node_id in self.dpg_node_id_dict.items():
+        for node_name, node_id in self.dpg_bind['node_id'].items():
             dpg.set_item_label(node_id, self.omit_name(node_name, omit_type))
 
     def update_edgename(self, omit_type: OmitType):
         """ Update edge name """
-        for nodeedge_name, text_id in self.dpg_nodeedge_text_dict.items():
+        for nodeedge_name, text_id in self.dpg_bind['nodeedge_text'].items():
             edgename = nodeedge_name.split('###')[-1]
             dpg.set_value(text_id, value=self.omit_name(edgename, omit_type))
 
