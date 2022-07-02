@@ -1,7 +1,8 @@
 {
     "app_setting": {
         "window_size": [1920, 1080],
-        "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf"
+        "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
+        "ignore_unconnected_nodes": false
     },
     "group_setting": {
         "/sensing": {

@@ -15,7 +15,6 @@
 Test caret2networkx module
 """
 
-import networkx as nx
 from dear_ros_node_viewer.caret2networkx import caret2networkx, quote_name
 
 

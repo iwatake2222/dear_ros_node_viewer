@@ -21,14 +21,16 @@ import matplotlib.pyplot as plt
 from dear_ros_node_viewer.caret2networkx import make_graph_from_topic_association
 
 
-def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph) -> nx.classes.digraph.DiGraph:
+def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph,
+                          ignore_unconnected=True) -> nx.classes.digraph.DiGraph:
     """Create NetworkX Object from dot graph file (nodes only) by rqt_graph"""
     graph = nx.DiGraph()
     for node_org in graph_org.nodes:
         if 'label' not in graph_org.nodes[node_org]:
             continue
         label = graph_org.nodes[node_org]['label']
-        graph.add_node(label)
+        if not ignore_unconnected:
+            graph.add_node(label)
 
     for edge in graph_org.edges:
         node_pub = graph_org.nodes[edge[0]]['label']
@@ -74,7 +76,7 @@ def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph) -> nx.classes.
     return graph
 
 
-def dot2networkx(filename: str) -> nx.classes.digraph.DiGraph:
+def dot2networkx(filename: str, ignore_unconnected=True) -> nx.classes.digraph.DiGraph:
     """Function to create NetworkX object from dot graph file (rosgraph.dot)"""
     graph_org = nx.DiGraph(nx.nx_pydot.read_dot(filename))
 
@@ -86,7 +88,7 @@ def dot2networkx(filename: str) -> nx.classes.digraph.DiGraph:
                 break
 
     if is_node_only:
-        graph = dot2networkx_nodeonly(graph_org)
+        graph = dot2networkx_nodeonly(graph_org, ignore_unconnected)
     else:
         graph = dot2networkx_nodetopic(graph_org)
 

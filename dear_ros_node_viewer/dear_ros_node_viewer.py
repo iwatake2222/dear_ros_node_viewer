@@ -36,38 +36,49 @@ def load_setting_json(setting_file):
         group_setting = setting['group_setting']
     else:
         app_setting = {
-            "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf"
+            "window_size": [1920, 1080],
+            "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
+            "ignore_unconnected_nodes": True
         }
         group_setting = {
             "__others__": {
+                "direction": "horizontal",
                 "offset": [0.0, 0.0, 1.0, 1.0],
                 "color": [0, 0, 0]
             }
 
         }
+
     return app_setting, group_setting
+
+
+def parse_args():
+    """ Parse arguments """
+    parser = argparse.ArgumentParser(
+        description='Dear RosNodeViewer: Visualize ROS2 Node Graph')
+    parser.add_argument(
+        '--graph_file', type=str, default='architecture.yaml',
+        help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
+              default=architecture.yaml')
+    parser.add_argument(
+        '--target_path', type=str, default='all_graph',
+        help='Optional: Specify path to be loaded. default=all_graph')
+    parser.add_argument(
+        '--setting_file', type=str, default='setting.json',
+        help='default=setting.json')
+    args = parser.parse_args()
+    return args
 
 
 def main():
     """
     Main function for Dear ROS Node Viewer
     """
-    parser = argparse.ArgumentParser(
-        description='Visualize Node Diagram using Architecture File Created by CARET')
-    parser.add_argument(
-        '--graph_file', type=str, default='architecture.yaml',
-        help='graph file path (architecture.yaml(CARETw) or rosgraph.dot(rqt_graph))')
-    parser.add_argument(
-        '--target_path', type=str, default='all_graph',
-        help='Specify path to be loaded. default=all_graph')
-    parser.add_argument(
-        '--setting_file', type=str, default='setting.json',
-        help='default=setting.json')
-    args = parser.parse_args()
+    args = parse_args()
 
     app_setting, group_setting = load_setting_json(args.setting_file)
 
-    graph_manager = GraphManager(group_setting)
+    graph_manager = GraphManager(app_setting, group_setting)
     if '.yaml' in args.graph_file:
         graph_manager.load_graph_from_caret(args.graph_file, args.target_path)
     elif '.dot' in args.graph_file:

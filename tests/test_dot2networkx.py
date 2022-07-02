@@ -15,7 +15,6 @@
 Test dot2networkx module
 """
 
-import networkx as nx
 from dear_ros_node_viewer.dot2networkx import dot2networkx
 
 

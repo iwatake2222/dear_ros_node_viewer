@@ -38,7 +38,8 @@ class GraphManager:
         FIRST_LAST = 2
         LAST = 3
 
-    def __init__(self, group_setting):
+    def __init__(self, app_setting, group_setting):
+        self.app_setting = app_setting
         self.group_setting = group_setting
         self.graph_size: list[int] = [1920, 1080]
         self.graph: nx.DiGraph = nx.DiGraph()
@@ -55,14 +56,15 @@ class GraphManager:
 
     def load_graph_from_caret(self, filename: str, target_path: str = 'all_graph'):
         """ load_graph_from_caret """
-        self.graph = caret2networkx(filename, target_path)
+        self.graph = caret2networkx(filename, target_path,
+                                    self.app_setting['ignore_unconnected_nodes'])
         self.graph = place_node_by_group(self.graph, self.group_setting)
         # self.graph = align_layout(self.graph)
         self.reset_internl_status()
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
-        self.graph = dot2networkx(filename)
+        self.graph = dot2networkx(filename, self.app_setting['ignore_unconnected_nodes'])
         self.graph = place_node_by_group(self.graph, self.group_setting)
         # self.graph = align_layout(self.graph)
         self.reset_internl_status()
