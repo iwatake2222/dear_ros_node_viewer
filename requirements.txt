@@ -4,6 +4,7 @@ pylint
 
 numpy
 matplotlib
+pydot
 networkx
 dearpygui
 graphviz

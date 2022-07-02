@@ -11,26 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
-__init__
+Test dot2networkx module
 """
 
-from dear_ros_node_viewer.dear_ros_node_viewer import main
-from dear_ros_node_viewer.caret2networkx import caret2networkx
+import networkx as nx
 from dear_ros_node_viewer.dot2networkx import dot2networkx
-from dear_ros_node_viewer.ros2networkx import Ros2Networkx
-from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
-from dear_ros_node_viewer.graph_manager import GraphManager
-from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
-__all__ = [
-    'main',
-    'caret2networkx',
-    'dot2networkx',
-    'Ros2Networkx',
-    'place_node_by_group',
-    'align_layout',
-    'GraphManager',
-    'Networkx2DearPyGui'
-]
+
+def test_dot2networkx():
+    graph = dot2networkx('rosgraph_nodeonly.dot')
+    assert(graph.has_node('"/node_src"'))
+
+    graph = dot2networkx('rosgraph_nodetopic.dot')
+    assert(graph.has_node('"/node_src"'))
