@@ -57,7 +57,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Dear RosNodeViewer: Visualize ROS2 Node Graph')
     parser.add_argument(
-        '--graph_file', type=str, default='architecture.yaml',
+        'graph_file', type=str, nargs='?', default='architecture.yaml',
         help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
               default=architecture.yaml')
     parser.add_argument(

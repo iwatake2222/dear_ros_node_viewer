@@ -75,11 +75,11 @@ class GraphManager:
         ros2networkx.save_graph('temp.dot')
         ros2networkx.shutdown()
         self.load_graph_from_dot('temp.dot')
-        for node in self.graph.nodes:
-            if '"/temp"' == node:
-                node_observer = node
-                break
-        self.graph.remove_node(node_observer)
+        # for node in self.graph.nodes:
+        #     if '"/temp"' == node:
+        #         node_observer = node
+        #         break
+        # self.graph.remove_node(node_observer)
         self.reset_internl_status()
 
     def reset_internl_status(self):

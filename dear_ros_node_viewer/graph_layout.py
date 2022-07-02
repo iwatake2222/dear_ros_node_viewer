@@ -122,8 +122,8 @@ def normalize_layout(layout: dict[str, tuple[int, int]]):
         layout[key] = list(val)
     layout_np = np.array(list(layout.values()))
     layout_min, layout_max = layout_np.min(0), layout_np.max(0)
-    norm_w = (layout_max[0] - layout_min[0])
-    norm_h = (layout_max[1] - layout_min[1])
+    norm_w = max((layout_max[0] - layout_min[0]), 1)
+    norm_h = max((layout_max[1] - layout_min[1]), 1)
     if norm_w == 0 or norm_h == 0:
         return layout
     for pos in layout.values():

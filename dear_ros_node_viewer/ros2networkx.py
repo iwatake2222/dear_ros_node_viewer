@@ -20,6 +20,7 @@ Reference: /opt/ros/galactic/lib/python3.8/site-packages/rqt_graph/rosgraph2_imp
 """
 
 import threading
+import time
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -48,10 +49,12 @@ class Ros2Networkx():
     def node_loop(self):
         """thread main function"""
         while rclpy.ok():
+            print('Analyzing...')
             self.executor_.spin_once(timeout_sec=1.0)
 
     def save_graph(self, filename: str = None) -> str:
         """save dot graph"""
+        time.sleep(5)
         graph = Graph(self.node_)
         graph.set_node_stale(5.0)
         graph.update()
@@ -65,7 +68,7 @@ class Ros2Networkx():
                     graph_mode='node_node',
                     hide_single_connection_topics=True,
                     hide_dead_end_topics=True,
-                    cluster_namespaces_level=1,
+                    cluster_namespaces_level=0,
                     # accumulate_actions=accumulate_actions,
                     dotcode_factory=PydotFactory(),
                     # orientation=orientation,
