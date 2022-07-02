@@ -19,8 +19,8 @@ from dear_ros_node_viewer.dot2networkx import dot2networkx
 
 
 def test_dot2networkx():
-    graph = dot2networkx('rosgraph_nodeonly.dot')
+    graph = dot2networkx('./sample/rosgraph_nodeonly.dot')
     assert(graph.has_node('"/node_src"'))
 
-    graph = dot2networkx('rosgraph_nodetopic.dot')
+    graph = dot2networkx('./sample/rosgraph_nodetopic.dot')
     assert(graph.has_node('"/node_src"'))
