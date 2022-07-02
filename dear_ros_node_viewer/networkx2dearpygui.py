@@ -20,12 +20,10 @@ from dear_ros_node_viewer.graph_manager import GraphManager
 
 class Networkx2DearPyGui:
     """ Display node graph using Dear PyGui from NetworkX graph """
-    app_setting: dict
-    graph_manager: GraphManager
-    window_size: list[int] = [100, 100]
-    font_size: int = 15
-    font_list: dict[int, int] = {}
-    dpg_id_nodeeditor: int
+
+    # Color definitions
+    COLOR_NODE_BAR = [32, 32, 32]
+    COLOR_NODE_BACK = [64, 64, 64]
 
     def __init__(
             self,
@@ -34,9 +32,12 @@ class Networkx2DearPyGui:
             window_width: int = 1920,
             window_height: int = 1080):
 
-        self.app_setting = app_setting
-        self.graph_manager = graph_manager
-        self.window_size = [window_width, window_height]
+        self.app_setting: dict = app_setting
+        self.graph_manager: GraphManager = graph_manager
+        self.window_size: list[int] = [window_width, window_height]
+        self.font_size: int = 15
+        self.font_list: dict[int, int] = {}
+        self.dpg_id_nodeeditor: int = -1
 
 
     def start(self):
@@ -52,14 +53,7 @@ class Networkx2DearPyGui:
 
             self.add_menu_in_dpg()
 
-            with dpg.node_editor(
-                    menubar=False, minimap=True,
-                    minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_nodeeditor:
-                    pass
-            
-            with dpg.node_editor(tag=self.dpg_id_nodeeditor):
-                self.add_node_in_dpg()
-                self.add_link_in_dpg()
+        self.update_node_editor()
 
         # Update node position according to the default graph size
         self._cb_wheel(0, 0)
@@ -74,6 +68,19 @@ class Networkx2DearPyGui:
         dpg.start_dearpygui()
         dpg.destroy_context()
 
+    def update_node_editor(self, graph_manager=None):
+        if graph_manager:
+            self.graph_manager = graph_manager
+
+        if self.dpg_id_nodeeditor != -1:
+            dpg.delete_item(self.dpg_id_nodeeditor)
+
+        with dpg.window(tag=self.window_id):
+            with dpg.node_editor(
+                    menubar=False, minimap=True,
+                    minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_nodeeditor:
+                self.add_node_in_dpg()
+                self.add_link_in_dpg()
 
     def add_menu_in_dpg(self):
         """ Add menu bar """
@@ -125,11 +132,11 @@ class Networkx2DearPyGui:
                             dpg.mvNodeCol_TitleBar,
                             graph.nodes[node_name]['color']
                             if 'color' in graph.nodes[node_name]
-                            else [32, 32, 32],
+                            else self.COLOR_NODE_BAR,
                             category=dpg.mvThemeCat_Nodes)
                         theme_color = dpg.add_theme_color(
                             dpg.mvNodeCol_NodeBackground,
-                            [64, 64, 64],
+                            self.COLOR_NODE_BACK,
                             category=dpg.mvThemeCat_Nodes)
                         # Set color value
                         self.graph_manager.add_dpg_node_color(node_name, theme_color)
@@ -223,7 +230,6 @@ class Networkx2DearPyGui:
         zoom in/out graph according to wheel direction
         """
         self.graph_manager.zoom_inout(app_data > 0)
-
 
     def _cb_menu_layout_reset(self, sender, app_data, user_data):
         """ Reset layout """

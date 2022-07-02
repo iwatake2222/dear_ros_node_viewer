@@ -32,7 +32,7 @@
         "__others__": {
             "direction": "horizontal",
             "offset": [0.0, 0.0, 1.0, 1.0],
-            "color": [16, 16, 16]
+            "color": [16, 64, 96]
         }
     }
 }
