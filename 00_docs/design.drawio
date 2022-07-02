@@ -1,0 +1,72 @@
+<mxfile host="65bd71144e">
+    <diagram id="BnE748BJy55KvScZHp6x" name="layout">
+        <mxGraphModel dx="866" dy="669" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="130" y="210" width="300" height="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="&quot;/sensing&quot;&lt;br&gt;module" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#800080;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="140" y="270" width="90" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="&quot;/localization&quot;&lt;br&gt;module" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#000080;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="140" y="350" width="90" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="&quot;/perception&quot;&lt;br&gt;module" style="rounded=0;whiteSpace=wrap;html=1;gradientColor=none;fillColor=#008000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="259" y="350" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&quot;/planning&quot;&lt;br&gt;module" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#808000;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="300" y="280" width="110" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="&quot;/control&quot;&lt;br&gt;module" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#c04000;gradientColor=none;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="260" y="220" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&quot;__other__&quot;&lt;br&gt;module" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#104080;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="140" y="220" width="90" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008000;" parent="1" vertex="1">
+                    <mxGeometry x="490" y="410" width="220" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="" style="shape=singleArrow;direction=south;whiteSpace=wrap;html=1;rotation=-60;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="370" width="60" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="14" target="15" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="node" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="510" y="430" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" style="edgeStyle=none;html=1;" parent="1" source="15" target="16" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="node" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="480" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="node" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="640" y="480" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Nodes in a module are automatically located" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;align=left;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="550" y="320" width="160" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="ROS Graph" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=bottom;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="130" y="180" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="/perception" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=bottom;whiteSpace=wrap;rounded=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="490" y="379" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Module location is specified in a setting file" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;align=left;fontStyle=1;size=30;position=0.16;position2=0;" vertex="1" parent="1">
+                    <mxGeometry x="440" y="200" width="160" height="80" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="mXWZ6aRSki-Hrsrp72kI" name="development">
+        <mxGraphModel dx="923" dy="702" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="EvMMipNBAn5lnf4ib6FE-0"/>
+                <mxCell id="EvMMipNBAn5lnf4ib6FE-1" parent="EvMMipNBAn5lnf4ib6FE-0"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
