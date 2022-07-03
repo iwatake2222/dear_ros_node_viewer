@@ -157,27 +157,31 @@ class Networkx2DearPyGui:
 
     def add_node_attr_in_dpg(self, graph, node_name):
         """ Add attributes in node """
-        added_edge_list_pub = []     # to check to avoid adding duplicated topic
-        added_edge_list_sub = []
+        edge_list_pub = []     # to check to avoid adding duplicated topic
+        edge_list_sub = []
         for edge in graph.edges:
             is_pub = None
             if edge[0] == node_name:
                 is_pub = True
                 label = graph.edges[edge]['label'] if 'label' in graph.edges[edge] else 'out'
-                if label in added_edge_list_pub:
+                if label in edge_list_pub:
                     continue
-                added_edge_list_pub.append(label)
+                edge_list_pub.append(label)
             if edge[1] == node_name:
                 is_pub = False
                 label = graph.edges[edge]['label'] if 'label' in graph.edges[edge] else 'in'
-                if label in added_edge_list_sub:
+                if label in edge_list_sub:
                     continue
-                added_edge_list_sub.append(label)
-            if is_pub is not None:
-                with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output
-                                        if is_pub else dpg.mvNode_Attr_Input) as attr_id:
-                    text_id = dpg.add_text(default_value=label)
-                    self.graph_manager.add_dpg_nodeedge_idtext(node_name, label, attr_id, text_id)
+                edge_list_sub.append(label)
+
+        for edge in edge_list_sub:
+            with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Input) as attr_id:
+                text_id = dpg.add_text(default_value=edge)
+                self.graph_manager.add_dpg_nodeedge_idtext(node_name, edge, attr_id, text_id)
+        for edge in edge_list_pub:
+            with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) as attr_id:
+                text_id = dpg.add_text(default_value=edge)
+                self.graph_manager.add_dpg_nodeedge_idtext(node_name, edge, attr_id, text_id)
 
     def add_link_in_dpg(self, ):
         """ Add links between node I/O """
