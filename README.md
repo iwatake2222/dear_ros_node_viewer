@@ -16,12 +16,12 @@
 ```sh
 sudo apt install graphviz graphviz-dev
 pip3 install -r requirements.txt
-python3 -m dear_ros_node_viewer architecture.yaml
+python3 main.py architecture.yaml
 ```
 
 - Operations:
     - Middle button drag: move graph area
-    - Mouse scroll: zoom in/out (zoom function is temporal)
+    - Mouse scroll: zoom in/out (zoom function is tentative)
 
 
 ## How to Use
