@@ -29,12 +29,17 @@ def load_setting_json(setting_file):
     Load JSON setting file
     Set default values if the file doesn't exist
     """
+    if not os.path.isfile(setting_file):
+        print(f'Unable to find {setting_file}. Use default setting')
+        setting_file = os.path.dirname(__file__) + '/../setting.json'
+
     if os.path.isfile(setting_file):
         with open(setting_file, encoding='UTF-8') as f_setting:
             setting = json.load(f_setting)
         app_setting = setting['app_setting']
         group_setting = setting['group_setting']
     else:
+        # Incase, default setting file was not found, too
         app_setting = {
             "window_size": [1920, 1080],
             "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
@@ -43,10 +48,9 @@ def load_setting_json(setting_file):
         group_setting = {
             "__others__": {
                 "direction": "horizontal",
-                "offset": [0.0, 0.0, 1.0, 1.0],
-                "color": [0, 0, 0]
+                "offset": [-0.5, -0.5, 1.0, 1.0],
+                "color": [16, 64, 96]
             }
-
         }
 
     return app_setting, group_setting
@@ -80,12 +84,18 @@ def main():
 
     graph_manager = GraphManager(app_setting, group_setting)
     if '.yaml' in args.graph_file:
-        graph_manager.load_graph_from_caret(args.graph_file, args.target_path)
+        try:
+            graph_manager.load_graph_from_caret(args.graph_file, args.target_path)
+        except FileNotFoundError as e:
+            print(e)
     elif '.dot' in args.graph_file:
-        graph_manager.load_graph_from_dot(args.graph_file)
+        try:
+            graph_manager.load_graph_from_dot(args.graph_file)
+        except FileNotFoundError as e:
+            print(e)
     else:
-        print('Unknown file format: {args.graph_file}')
-        return
+        print(f'Unknown file format: {args.graph_file}')
+        # return   # keep going
 
     dpg = Networkx2DearPyGui(
         app_setting, graph_manager, app_setting['window_size'][0], app_setting['window_size'][1])
