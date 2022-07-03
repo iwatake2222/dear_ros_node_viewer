@@ -27,6 +27,7 @@ class GraphManager:
     """ Binding Graph and GUI components"""
 
     # Color definitions
+    COLOR_HIGHLIGHT_SELECTED = [0, 0, 64]
     COLOR_HIGHLIGHT_PUB = [0, 64, 0]
     COLOR_HIGHLIGHT_SUB = [64, 0, 0]
     COLOR_HIGHLIGHT_DEF = [64, 64, 64]
@@ -123,7 +124,7 @@ class GraphManager:
     def high_light_node(self, dpg_id_node):
         """ High light the selected node and connected nodes """
         selected_node_name = [k for k, v in self.dpg_bind['node_id'].items() if v == dpg_id_node][0]
-
+        is_re_clicked = self.node_selected_dict[selected_node_name]
         for node_name, _ in self.node_selected_dict.items():
             publishing_edge_list = [e for e in self.graph.edges if node_name in e[0]]
             publishing_edge_subscribing_node_name_list = \
@@ -134,6 +135,9 @@ class GraphManager:
             if self.node_selected_dict[node_name]:
                 # Disable highlight for all the other nodes#
                 self.node_selected_dict[node_name] = False
+                dpg.set_value(
+                    self.dpg_bind['node_color'][node_name],
+                    self.COLOR_HIGHLIGHT_DEF)
                 for edge_name in publishing_edge_list:
                     dpg.set_value(
                         self.dpg_bind['edge_color'][edge_name],
@@ -150,26 +154,36 @@ class GraphManager:
                     dpg.set_value(
                         self.dpg_bind['node_color'][sub_node_name],
                         self.COLOR_HIGHLIGHT_DEF)
+                break
 
-            elif selected_node_name == node_name:
-                # Enable highlight for the selected node #
-                self.node_selected_dict[node_name] = True
-                for edge_name in publishing_edge_list:
-                    dpg.set_value(
-                        self.dpg_bind['edge_color'][edge_name],
-                        self.COLOR_HIGHLIGHT_EDGE)
-                for pub_node_name in publishing_edge_subscribing_node_name_list:
-                    dpg.set_value(
-                        self.dpg_bind['node_color'][pub_node_name],
-                        self.COLOR_HIGHLIGHT_PUB)
-                for edge_name in subscribing_edge_list:
-                    dpg.set_value(
-                        self.dpg_bind['edge_color'][edge_name],
-                        self.COLOR_HIGHLIGHT_EDGE)
-                for sub_node_name in subscribing_edge_publishing_node_name_list:
-                    dpg.set_value(
-                        self.dpg_bind['node_color'][sub_node_name],
-                        self.COLOR_HIGHLIGHT_SUB)
+        if not is_re_clicked:
+            # Enable highlight for the selected node #
+            publishing_edge_list = [e for e in self.graph.edges if selected_node_name in e[0]]
+            publishing_edge_subscribing_node_name_list = \
+                [e[1] for e in self.graph.edges if e[0] == selected_node_name]
+            subscribing_edge_list = [e for e in self.graph.edges if selected_node_name in e[1]]
+            subscribing_edge_publishing_node_name_list = \
+                [e[0] for e in self.graph.edges if e[1] == selected_node_name]
+            self.node_selected_dict[selected_node_name] = True
+            dpg.set_value(
+                self.dpg_bind['node_color'][selected_node_name],
+                self.COLOR_HIGHLIGHT_SELECTED)
+            for edge_name in publishing_edge_list:
+                dpg.set_value(
+                    self.dpg_bind['edge_color'][edge_name],
+                    self.COLOR_HIGHLIGHT_EDGE)
+            for pub_node_name in publishing_edge_subscribing_node_name_list:
+                dpg.set_value(
+                    self.dpg_bind['node_color'][pub_node_name],
+                    self.COLOR_HIGHLIGHT_PUB)
+            for edge_name in subscribing_edge_list:
+                dpg.set_value(
+                    self.dpg_bind['edge_color'][edge_name],
+                    self.COLOR_HIGHLIGHT_EDGE)
+            for sub_node_name in subscribing_edge_publishing_node_name_list:
+                dpg.set_value(
+                    self.dpg_bind['node_color'][sub_node_name],
+                    self.COLOR_HIGHLIGHT_SUB)
 
     def zoom_inout(self, is_zoom_in):
         """ Zoom in/out """

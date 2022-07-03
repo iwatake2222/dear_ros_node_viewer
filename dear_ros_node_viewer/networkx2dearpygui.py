@@ -157,18 +157,15 @@ class Networkx2DearPyGui:
 
     def add_node_attr_in_dpg(self, graph, node_name):
         """ Add attributes in node """
-        edge_list_pub = []     # to check to avoid adding duplicated topic
+        edge_list_pub = []
         edge_list_sub = []
         for edge in graph.edges:
-            is_pub = None
             if edge[0] == node_name:
-                is_pub = True
                 label = graph.edges[edge]['label'] if 'label' in graph.edges[edge] else 'out'
                 if label in edge_list_pub:
                     continue
                 edge_list_pub.append(label)
             if edge[1] == node_name:
-                is_pub = False
                 label = graph.edges[edge]['label'] if 'label' in graph.edges[edge] else 'in'
                 if label in edge_list_sub:
                     continue

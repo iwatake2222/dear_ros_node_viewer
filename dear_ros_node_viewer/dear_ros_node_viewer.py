@@ -86,13 +86,13 @@ def main():
     if '.yaml' in args.graph_file:
         try:
             graph_manager.load_graph_from_caret(args.graph_file, args.target_path)
-        except FileNotFoundError as e:
-            print(e)
+        except FileNotFoundError as err:
+            print(err)
     elif '.dot' in args.graph_file:
         try:
             graph_manager.load_graph_from_dot(args.graph_file)
-        except FileNotFoundError as e:
-            print(e)
+        except FileNotFoundError as err:
+            print(err)
     else:
         print(f'Unknown file format: {args.graph_file}')
         # return   # keep going
