@@ -31,7 +31,7 @@ def load_setting_json(setting_file):
     """
     if not os.path.isfile(setting_file):
         print(f'Unable to find {setting_file}. Use default setting')
-        setting_file = os.path.dirname(__file__) + '/../setting.json'
+        setting_file = os.path.dirname(__file__) + '/setting.json'
 
     if os.path.isfile(setting_file):
         with open(setting_file, encoding='UTF-8') as f_setting:

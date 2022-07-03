@@ -10,6 +10,7 @@ setup(
     license='Apache License 2.0',
     tests_require=['pytest'],
     packages=find_packages(),
+    package_data={"dear_ros_node_viewer": ["setting.json"]},
     entry_points="""
       [console_scripts]
       dear_ros_node_viewer=dear_ros_node_viewer.__main__:main
