@@ -2,7 +2,8 @@
     <img src="./00_docs/logo.png" alt="Dear RosNodeViewer logo"></a>
 </h1>
 
-[![Python application](https://github.com/takeshi-iwanari/dear_ros_node_viewer/actions/workflows/python-app.yml/badge.svg)](https://github.com/takeshi-iwanari/dear_ros_node_viewer/actions/workflows/python-app.yml)
+https://user-images.githubusercontent.com/105265012/177068238-eaf4fed9-12c0-4c5b-ac7f-9597483c4c3c.mp4
+
 
 # Dear RosNodeViewer
 ## About
