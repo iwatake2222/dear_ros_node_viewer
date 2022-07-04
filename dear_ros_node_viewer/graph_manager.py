@@ -20,7 +20,7 @@ import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.caret2networkx import caret2networkx
 from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.ros2networkx import Ros2Networkx
-from dear_ros_node_viewer.graph_layout import place_node_by_group
+from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
 
 
 class GraphManager:
@@ -60,14 +60,14 @@ class GraphManager:
         self.graph = caret2networkx(filename, target_path,
                                     self.app_setting['ignore_unconnected_nodes'])
         self.graph = place_node_by_group(self.graph, self.group_setting)
-        # self.graph = align_layout(self.graph)
+        self.graph = align_layout(self.graph)
         self.reset_internl_status()
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
         self.graph = dot2networkx(filename, self.app_setting['ignore_unconnected_nodes'])
         self.graph = place_node_by_group(self.graph, self.group_setting)
-        # self.graph = align_layout(self.graph)
+        self.graph = align_layout(self.graph)
         self.reset_internl_status()
 
     def load_graph_from_running_ros(self):
