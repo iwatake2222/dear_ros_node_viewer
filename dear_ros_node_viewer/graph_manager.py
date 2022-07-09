@@ -15,6 +15,7 @@
 from __future__ import annotations
 from enum import Enum
 import textwrap
+import json
 import networkx as nx
 import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.caret2networkx import caret2networkx
@@ -206,6 +207,27 @@ class GraphManager:
             pos = self.graph.nodes[node_name]['pos']
             pos = (pos[0] * self.graph_size[0], pos[1] * self.graph_size[1])
             dpg.set_item_pos(node_id, pos)
+
+    def load_layout(self):
+        """ Load node layout """
+        filename = self.app_setting['layout_filename'] if 'layout_filename' in self.app_setting else 'layout.json'
+        with open(filename, 'r') as f:
+            pos_dict = json.load(f)
+        for node_name, pos in pos_dict.items():
+            self.graph.nodes[node_name]['pos'] = pos
+        self.reset_layout()
+
+    def save_layout(self):
+        """ Save node layout """
+        pos_dict = {}
+        for node_name, node_id in self.dpg_bind['node_id'].items():
+            pos = dpg.get_item_pos(node_id)
+            pos = (pos[0] / self.graph_size[0], pos[1] / self.graph_size[1])
+            pos_dict[node_name] = pos
+
+        filename = self.app_setting['layout_filename'] if 'layout_filename' in self.app_setting else 'layout.json'
+        with open(filename, 'w') as f:
+            json.dump(pos_dict, f, ensure_ascii=True, indent=4)
 
     def update_font(self, font):
         """ Update font used in all nodes according to current font size """

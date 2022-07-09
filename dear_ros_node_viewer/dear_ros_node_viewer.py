@@ -43,7 +43,8 @@ def load_setting_json(setting_file):
         app_setting = {
             "window_size": [1920, 1080],
             "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
-            "ignore_unconnected_nodes": True
+            "ignore_unconnected_nodes": True,
+            "layout_filename": "layout.json"
         }
         group_setting = {
             "__others__": {

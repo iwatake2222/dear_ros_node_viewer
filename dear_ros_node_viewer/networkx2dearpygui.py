@@ -235,11 +235,11 @@ class Networkx2DearPyGui:
 
     def _cb_menu_layout_save(self, sender, app_data, user_data):
         """ Save current layout """
-        print('not implemented yet')
+        self.graph_manager.save_layout()
 
     def _cb_menu_layout_load(self, sender, app_data, user_data):
         """ Load layout from file """
-        print('not implemented yet')
+        self.graph_manager.load_layout()
 
     def _cb_menu_graph_current(self, sender, app_data, user_data):
         """ Update graph using current ROS status """
