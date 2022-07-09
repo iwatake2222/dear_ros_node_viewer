@@ -13,6 +13,7 @@
 # limitations under the License.
 """ Class to manage graph (NetworkX) """
 from __future__ import annotations
+import os
 from enum import Enum
 import textwrap
 import json
@@ -43,6 +44,7 @@ class GraphManager:
     def __init__(self, app_setting, group_setting):
         self.app_setting = app_setting
         self.group_setting = group_setting
+        self.dir = './'
         self.graph_size: list[int] = [1920, 1080]
         self.graph: nx.DiGraph = nx.DiGraph()
         self.node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
@@ -60,28 +62,32 @@ class GraphManager:
         """ load_graph_from_caret """
         self.graph = caret2networkx(filename, target_path,
                                     self.app_setting['ignore_unconnected_nodes'])
-        self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
-        self.reset_internl_status()
+        self.load_graph_postprocess(filename)
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
         self.graph = dot2networkx(filename, self.app_setting['ignore_unconnected_nodes'])
-        self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
-        self.reset_internl_status()
+        self.load_graph_postprocess(filename)
 
     def load_graph_from_running_ros(self):
         """ load_graph_from_running_ros """
         ros2networkx = Ros2Networkx(node_name='temp')
-        ros2networkx.save_graph('temp.dot')
+        ros2networkx.save_graph('./temp.dot')
         ros2networkx.shutdown()
-        self.load_graph_from_dot('temp.dot')
+        self.load_graph_from_dot('./temp.dot')
         # for node in self.graph.nodes:
         #     if '"/temp"' == node:
         #         node_observer = node
         #         break
         # self.graph.remove_node(node_observer)
+        # self.reset_internl_status()
+
+    def load_graph_postprocess(self, filename):
+        """ Common process after loading graph """
+        self.dir = os.path.dirname(filename) if os.path.dirname(filename) != '' else './'
+        self.graph = place_node_by_group(self.graph, self.group_setting)
+        self.graph = align_layout(self.graph)
+        self.load_layout()
         self.reset_internl_status()
 
     def reset_internl_status(self):
@@ -210,11 +216,15 @@ class GraphManager:
 
     def load_layout(self):
         """ Load node layout """
-        filename = self.app_setting['layout_filename'] if 'layout_filename' in self.app_setting else 'layout.json'
+        filename = self.dir + '/layout.json'
+        if not os.path.exists(filename):
+            print(filename + ' does not exist')
+            return
         with open(filename, 'r') as f:
             pos_dict = json.load(f)
         for node_name, pos in pos_dict.items():
-            self.graph.nodes[node_name]['pos'] = pos
+            if node_name in self.graph.nodes:
+                self.graph.nodes[node_name]['pos'] = pos
         self.reset_layout()
 
     def save_layout(self):
@@ -225,7 +235,7 @@ class GraphManager:
             pos = (pos[0] / self.graph_size[0], pos[1] / self.graph_size[1])
             pos_dict[node_name] = pos
 
-        filename = self.app_setting['layout_filename'] if 'layout_filename' in self.app_setting else 'layout.json'
+        filename = self.dir + '/layout.json'
         with open(filename, 'w') as f:
             json.dump(pos_dict, f, ensure_ascii=True, indent=4)
 
