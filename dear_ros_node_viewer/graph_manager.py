@@ -246,10 +246,11 @@ class GraphManager:
 
     def copy_selected_node_name(self, dpg_id_nodeeditor):
         """Copy selected node names to clipboard"""
-        def get_key(dict, val):
-            for key, value in dict.items():
+        def get_key(dic, val):
+            for key, value in dic.items():
                 if val == value:
                     return key
+            return None
 
         node_name_list = ''
         for node_id in dpg.get_selected_nodes(dpg_id_nodeeditor):
