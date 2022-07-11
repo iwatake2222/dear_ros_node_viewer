@@ -43,7 +43,7 @@ def load_setting_json(setting_file):
         app_setting = {
             "window_size": [1920, 1080],
             "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
-            "ignore_unconnected_nodes": True
+            "ignore_unconnected_nodes": True,
         }
         group_setting = {
             "__others__": {
@@ -65,9 +65,6 @@ def parse_args():
         help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
               default=architecture.yaml')
     parser.add_argument(
-        '--target_path', type=str, default='all_graph',
-        help='Optional: Specify path to be loaded. default=all_graph')
-    parser.add_argument(
         '--setting_file', type=str, default='setting.json',
         help='default=setting.json')
     args = parser.parse_args()
@@ -85,7 +82,7 @@ def main():
     graph_manager = GraphManager(app_setting, group_setting)
     if '.yaml' in args.graph_file:
         try:
-            graph_manager.load_graph_from_caret(args.graph_file, args.target_path)
+            graph_manager.load_graph_from_caret(args.graph_file)
         except FileNotFoundError as err:
             print(err)
     elif '.dot' in args.graph_file:

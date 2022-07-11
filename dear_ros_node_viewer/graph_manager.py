@@ -13,8 +13,10 @@
 # limitations under the License.
 """ Class to manage graph (NetworkX) """
 from __future__ import annotations
+import os
 from enum import Enum
 import textwrap
+import json
 import networkx as nx
 import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.caret2networkx import caret2networkx
@@ -42,6 +44,7 @@ class GraphManager:
     def __init__(self, app_setting, group_setting):
         self.app_setting = app_setting
         self.group_setting = group_setting
+        self.dir = './'
         self.graph_size: list[int] = [1920, 1080]
         self.graph: nx.DiGraph = nx.DiGraph()
         self.node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
@@ -59,31 +62,35 @@ class GraphManager:
         """ load_graph_from_caret """
         self.graph = caret2networkx(filename, target_path,
                                     self.app_setting['ignore_unconnected_nodes'])
-        self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
-        self.reset_internl_status()
+        self.load_graph_postprocess(filename)
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
         self.graph = dot2networkx(filename, self.app_setting['ignore_unconnected_nodes'])
-        self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
-        self.reset_internl_status()
+        self.load_graph_postprocess(filename)
 
     def load_graph_from_running_ros(self):
         """ load_graph_from_running_ros """
         ros2networkx = Ros2Networkx(node_name='temp')
-        ros2networkx.save_graph('temp.dot')
+        ros2networkx.save_graph('./temp.dot')
         ros2networkx.shutdown()
-        self.load_graph_from_dot('temp.dot')
+        self.load_graph_from_dot('./temp.dot')
         # for node in self.graph.nodes:
         #     if '"/temp"' == node:
         #         node_observer = node
         #         break
         # self.graph.remove_node(node_observer)
-        self.reset_internl_status()
+        # self.reset_internl_status()
 
-    def reset_internl_status(self):
+    def load_graph_postprocess(self, filename):
+        """ Common process after loading graph """
+        self.dir = os.path.dirname(filename) if os.path.dirname(filename) != '' else './'
+        self.graph = place_node_by_group(self.graph, self.group_setting)
+        self.graph = align_layout(self.graph)
+        self.load_layout()
+        self._reset_internl_status()
+
+    def _reset_internl_status(self):
         """ Reset internal status """
         self.node_selected_dict.clear()
         for node_name in self.graph.nodes:
@@ -104,7 +111,7 @@ class GraphManager:
 
     def add_dpg_nodeedge_idtext(self, node_name, edge_name, attr_id, text_id):
         """ Add association b/w node_attr and dpg_id """
-        key = self.make_nodeedge_key(node_name, edge_name)
+        key = self._make_nodeedge_key(node_name, edge_name)
         self.dpg_bind['nodeedge_id'][key] = attr_id
         self.dpg_bind['nodeedge_text'][key] = text_id
 
@@ -114,10 +121,10 @@ class GraphManager:
 
     def get_dpg_nodeedge_id(self, node_name, edge_name):
         """ Get association for a selected name """
-        key = self.make_nodeedge_key(node_name, edge_name)
+        key = self._make_nodeedge_key(node_name, edge_name)
         return self.dpg_bind['nodeedge_id'][key]
 
-    def make_nodeedge_key(self, node_name, edge_name):
+    def _make_nodeedge_key(self, node_name, edge_name):
         """create dictionary key for topic attribute in node"""
         return node_name + '###' + edge_name
 
@@ -207,6 +214,31 @@ class GraphManager:
             pos = (pos[0] * self.graph_size[0], pos[1] * self.graph_size[1])
             dpg.set_item_pos(node_id, pos)
 
+    def load_layout(self):
+        """ Load node layout """
+        filename = self.dir + '/layout.json'
+        if not os.path.exists(filename):
+            print(filename + ' does not exist')
+            return
+        with open(filename, encoding='UTF-8') as f_layout:
+            pos_dict = json.load(f_layout)
+        for node_name, pos in pos_dict.items():
+            if node_name in self.graph.nodes:
+                self.graph.nodes[node_name]['pos'] = pos
+        self.reset_layout()
+
+    def save_layout(self):
+        """ Save node layout """
+        pos_dict = {}
+        for node_name, node_id in self.dpg_bind['node_id'].items():
+            pos = dpg.get_item_pos(node_id)
+            pos = (pos[0] / self.graph_size[0], pos[1] / self.graph_size[1])
+            pos_dict[node_name] = pos
+
+        filename = self.dir + '/layout.json'
+        with open(filename, encoding='UTF-8', mode='w') as f_layout:
+            json.dump(pos_dict, f_layout, ensure_ascii=True, indent=4)
+
     def update_font(self, font):
         """ Update font used in all nodes according to current font size """
         for node_id in self.dpg_bind['node_id'].values():
@@ -215,15 +247,15 @@ class GraphManager:
     def update_nodename(self, omit_type: OmitType):
         """ Update node name """
         for node_name, node_id in self.dpg_bind['node_id'].items():
-            dpg.set_item_label(node_id, self.omit_name(node_name, omit_type))
+            dpg.set_item_label(node_id, self._omit_name(node_name, omit_type))
 
     def update_edgename(self, omit_type: OmitType):
         """ Update edge name """
         for nodeedge_name, text_id in self.dpg_bind['nodeedge_text'].items():
             edgename = nodeedge_name.split('###')[-1]
-            dpg.set_value(text_id, value=self.omit_name(edgename, omit_type))
+            dpg.set_value(text_id, value=self._omit_name(edgename, omit_type))
 
-    def omit_name(self, name: str, omit_type: OmitType) -> str:
+    def _omit_name(self, name: str, omit_type: OmitType) -> str:
         """ replace an original name to a name to be displayed """
         display_name = name.strip('"')
         if omit_type == self.OmitType.FULL:
