@@ -85,6 +85,7 @@ class Networkx2DearPyGui:
                     minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_editor:
                 self.add_node_in_dpg()
                 self.add_link_in_dpg()
+        self.graph_manager.load_layout()
 
     def add_menu_in_dpg(self):
         """ Add menu bar """

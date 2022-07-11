@@ -87,7 +87,6 @@ class GraphManager:
         self.dir = os.path.dirname(filename) if os.path.dirname(filename) != '' else './'
         self.graph = place_node_by_group(self.graph, self.group_setting)
         self.graph = align_layout(self.graph)
-        self.load_layout()
         self._reset_internl_status()
 
     def _reset_internl_status(self):
