@@ -88,9 +88,9 @@ class GraphManager:
         self.graph = place_node_by_group(self.graph, self.group_setting)
         self.graph = align_layout(self.graph)
         self.load_layout()
-        self.reset_internl_status()
+        self._reset_internl_status()
 
-    def reset_internl_status(self):
+    def _reset_internl_status(self):
         """ Reset internal status """
         self.node_selected_dict.clear()
         for node_name in self.graph.nodes:
@@ -111,7 +111,7 @@ class GraphManager:
 
     def add_dpg_nodeedge_idtext(self, node_name, edge_name, attr_id, text_id):
         """ Add association b/w node_attr and dpg_id """
-        key = self.make_nodeedge_key(node_name, edge_name)
+        key = self._make_nodeedge_key(node_name, edge_name)
         self.dpg_bind['nodeedge_id'][key] = attr_id
         self.dpg_bind['nodeedge_text'][key] = text_id
 
@@ -121,10 +121,10 @@ class GraphManager:
 
     def get_dpg_nodeedge_id(self, node_name, edge_name):
         """ Get association for a selected name """
-        key = self.make_nodeedge_key(node_name, edge_name)
+        key = self._make_nodeedge_key(node_name, edge_name)
         return self.dpg_bind['nodeedge_id'][key]
 
-    def make_nodeedge_key(self, node_name, edge_name):
+    def _make_nodeedge_key(self, node_name, edge_name):
         """create dictionary key for topic attribute in node"""
         return node_name + '###' + edge_name
 
@@ -220,8 +220,8 @@ class GraphManager:
         if not os.path.exists(filename):
             print(filename + ' does not exist')
             return
-        with open(filename, 'r') as f:
-            pos_dict = json.load(f)
+        with open(filename, encoding='UTF-8') as f_layout:
+            pos_dict = json.load(f_layout)
         for node_name, pos in pos_dict.items():
             if node_name in self.graph.nodes:
                 self.graph.nodes[node_name]['pos'] = pos
@@ -236,8 +236,8 @@ class GraphManager:
             pos_dict[node_name] = pos
 
         filename = self.dir + '/layout.json'
-        with open(filename, 'w') as f:
-            json.dump(pos_dict, f, ensure_ascii=True, indent=4)
+        with open(filename, encoding='UTF-8', mode='w') as f_layout:
+            json.dump(pos_dict, f_layout, ensure_ascii=True, indent=4)
 
     def update_font(self, font):
         """ Update font used in all nodes according to current font size """
@@ -247,15 +247,15 @@ class GraphManager:
     def update_nodename(self, omit_type: OmitType):
         """ Update node name """
         for node_name, node_id in self.dpg_bind['node_id'].items():
-            dpg.set_item_label(node_id, self.omit_name(node_name, omit_type))
+            dpg.set_item_label(node_id, self._omit_name(node_name, omit_type))
 
     def update_edgename(self, omit_type: OmitType):
         """ Update edge name """
         for nodeedge_name, text_id in self.dpg_bind['nodeedge_text'].items():
             edgename = nodeedge_name.split('###')[-1]
-            dpg.set_value(text_id, value=self.omit_name(edgename, omit_type))
+            dpg.set_value(text_id, value=self._omit_name(edgename, omit_type))
 
-    def omit_name(self, name: str, omit_type: OmitType) -> str:
+    def _omit_name(self, name: str, omit_type: OmitType) -> str:
         """ replace an original name to a name to be displayed """
         display_name = name.strip('"')
         if omit_type == self.OmitType.FULL:
