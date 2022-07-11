@@ -22,6 +22,7 @@ class Networkx2DearPyGui:
     """ Display node graph using Dear PyGui from NetworkX graph """
 
     # Color definitions
+    COLOR_NODE_SELECTED = [0, 0, 64]
     COLOR_NODE_BAR = [32, 32, 32]
     COLOR_NODE_BACK = [64, 64, 64]
 
@@ -46,6 +47,8 @@ class Networkx2DearPyGui:
         self._make_font_table(self.app_setting['font'])
         with dpg.handler_registry():
             dpg.add_mouse_wheel_handler(callback=self._cb_wheel)
+            dpg.add_key_press_handler(callback=self._cb_key_press)
+
         with dpg.window(
                 width=self.window_size[0], height=self.window_size[1],
                 no_collapse=True, no_title_bar=True, no_move=True,
@@ -133,6 +136,10 @@ class Networkx2DearPyGui:
                             graph.nodes[node_name]['color']
                             if 'color' in graph.nodes[node_name]
                             else self.COLOR_NODE_BAR,
+                            category=dpg.mvThemeCat_Nodes)
+                        dpg.add_theme_color(
+                            dpg.mvNodeCol_NodeBackgroundSelected,
+                            self.COLOR_NODE_SELECTED,
                             category=dpg.mvThemeCat_Nodes)
                         theme_color = dpg.add_theme_color(
                             dpg.mvNodeCol_NodeBackground,
@@ -228,6 +235,12 @@ class Networkx2DearPyGui:
         zoom in/out graph according to wheel direction
         """
         self.graph_manager.zoom_inout(app_data > 0)
+
+    def _cb_key_press(self, sender, app_data):
+        """callback function for key press"""
+        if app_data == 67:
+            # ctrl-c
+            self.graph_manager.copy_selected_node_name(self.dpg_id_editor)
 
     def _cb_menu_layout_reset(self, sender, app_data, user_data):
         """ Reset layout """

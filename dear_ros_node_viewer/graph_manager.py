@@ -243,3 +243,21 @@ class GraphManager:
             display_name = textwrap.fill(display_name, 40)
 
         return display_name
+
+    def copy_selected_node_name(self, dpg_id_nodeeditor):
+        """Copy selected node names to clipboard"""
+        def get_key(dic, val):
+            for key, value in dic.items():
+                if val == value:
+                    return key
+            return None
+
+        node_name_list = ''
+        for node_id in dpg.get_selected_nodes(dpg_id_nodeeditor):
+            node_name = get_key(self.dpg_bind['node_id'], node_id)
+            node_name = node_name.strip('"')
+            node_name_list += node_name + ', \n'
+            print(node_name)
+        print('---')
+
+        dpg.set_clipboard_text(node_name_list)
