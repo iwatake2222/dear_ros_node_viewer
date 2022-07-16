@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src="./00_docs/logo.png" alt="Dear RosNodeViewer logo"></a>
+    <img src="https://github.com/takeshi-iwanari/dear_ros_node_viewer/raw/main/00_docs/logo.png" alt="Dear RosNodeViewer logo"></a>
 </h1>
 
 https://user-images.githubusercontent.com/105265012/177068238-eaf4fed9-12c0-4c5b-ac7f-9597483c4c3c.mp4
@@ -15,9 +15,17 @@ https://user-images.githubusercontent.com/105265012/177068238-eaf4fed9-12c0-4c5b
 
 ## Get Started
 ```sh
+# Install requirements
 sudo apt install graphviz graphviz-dev
-pip3 install -r requirements.txt
-python3 main.py architecture.yaml
+
+# Install Dear RosNodeViewer
+pip3 install git+https://github.com/takeshi-iwanari/dear_ros_node_viewer
+
+# Download sample graph
+wget https://raw.githubusercontent.com/takeshi-iwanari/dear_ros_node_viewer/main/sample/architecture_autoware.yaml
+
+# Run Dear RosNodeViewer
+dear_ros_node_viewer architecture_autoware.yaml
 ```
 
 - Operations:
