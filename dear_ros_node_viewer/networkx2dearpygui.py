@@ -100,7 +100,7 @@ class Networkx2DearPyGui:
                 dpg.add_menu_item(label="Load", callback=self._cb_menu_layout_load)
 
             with dpg.menu(label="Graph"):
-                dpg.add_menu_item(label="Running ROS (experimental)",
+                dpg.add_menu_item(label="Running ROS",
                                   callback=self._cb_menu_graph_current)
 
             with dpg.menu(label="Font"):

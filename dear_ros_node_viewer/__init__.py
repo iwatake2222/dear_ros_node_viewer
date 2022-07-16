@@ -26,7 +26,7 @@ from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
 
 __copyright__    = 'Copyright 2022 Tier IV, Inc.'
-__version__      = '0.0.2'
+__version__      = '0.1.0'
 __license__      = 'Apache License 2.0'
 __author__       = 'takeshi-iwanari'
 __author_email__ = 'takeshi.iwanari@tier4.jp'
