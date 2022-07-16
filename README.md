@@ -1,4 +1,3 @@
-# Dear RosNodeViewer
 <h1 align="center">
     <img src="https://github.com/takeshi-iwanari/dear_ros_node_viewer/raw/main/00_docs/logo.png" alt="Dear RosNodeViewer logo"></a>
 </h1>
@@ -9,7 +8,7 @@ https://user-images.githubusercontent.com/105265012/177068238-eaf4fed9-12c0-4c5b
 [![PyPI Publish](https://github.com/takeshi-iwanari/dear_ros_node_viewer/actions/workflows/pypi-publish.yml/badge.svg)](https://pypi.org/project/dear-ros-node-viewer/)
 
 
-
+# Dear RosNodeViewer
 ## About
 - Visualize ROS2 node diagram
 - Support the following sources:
