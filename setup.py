@@ -63,7 +63,7 @@ setup(
     # tests_require=['pytest'],
     packages=find_packages(),
     platforms=["linux", "unix"],
-    package_data={"dear_ros_node_viewer": ["setting.json"]},
+    package_data={"dear_ros_node_viewer": ["setting.json", "font/*/*.ttf"]},
     entry_points="""
         [console_scripts]
         dear_ros_node_viewer=dear_ros_node_viewer.__main__:main
