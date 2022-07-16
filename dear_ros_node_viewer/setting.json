@@ -1,7 +1,7 @@
 {
     "app_setting": {
         "window_size": [1920, 1080],
-        "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
+        "font": "font/roboto/Roboto-Medium.ttf",
         "ignore_unconnected_nodes": true
     },
     "group_setting": {

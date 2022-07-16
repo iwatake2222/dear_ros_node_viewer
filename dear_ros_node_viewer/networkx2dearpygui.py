@@ -61,8 +61,9 @@ class Networkx2DearPyGui:
 
         self.update_node_editor()
 
-        # Update node position according to the default graph size
+        # Update node position and font according to the default graph size and font size
         self._cb_wheel(0, 0)
+        self._cb_menu_font_size(None, self.font_size, None)
 
         # Dear PyGui stuffs
         dpg.create_viewport(
@@ -300,7 +301,7 @@ class Networkx2DearPyGui:
                 try:
                     self.font_list[i] = dpg.add_font(font_path, i)
                 except SystemError:
-                    logger.error('Failed to load font')
+                    logger.error('Failed to load font: %s', font_path)
 
 
 if __name__ == '__main__':

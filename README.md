@@ -40,3 +40,6 @@ dear_ros_node_viewer architecture_autoware.yaml
 # Acknowledgements
 - Dear RosNodeViewer utilizes [Dear PyGui](https://github.com/hoffstadt/DearPyGui)
     - *Dear RosNodeViewer* is named in honor of Dear PyGui
+- Dear RosNodeViewer contains Roboto font
+    - https://fonts.google.com/specimen/Roboto
+    - licensed under the Apache License, Version 2.0.

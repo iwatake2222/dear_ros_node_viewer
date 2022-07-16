@@ -26,6 +26,14 @@ from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 logger = LoggerFactory.create(__name__)
 
 
+def get_font_path(font_name: str) -> str:
+    """find font_path from font_name"""
+    if font_name[:4] == 'font':
+        font_path = os.path.dirname(__file__) + '/' + font_name
+        return font_path
+    return font_name
+
+
 def load_setting_json(graph_file):
     """
     Load JSON setting file
@@ -49,7 +57,7 @@ def load_setting_json(graph_file):
         logger.info('Unable to find %s. Use fixed default setting', setting_file)
         app_setting = {
             "window_size": [1920, 1080],
-            "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
+            "font": "font/roboto/Roboto-Medium.ttf",
             "ignore_unconnected_nodes": True,
         }
         group_setting = {
@@ -59,6 +67,8 @@ def load_setting_json(graph_file):
                 "color": [16, 64, 96]
             }
         }
+
+    app_setting['font'] = get_font_path(app_setting['font'])
 
     return app_setting, group_setting
 
