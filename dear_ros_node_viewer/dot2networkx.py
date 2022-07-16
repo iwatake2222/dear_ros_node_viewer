@@ -18,7 +18,11 @@ Function to create NetworkX object from dot graph file (rosgraph.dot)
 from __future__ import annotations
 import networkx as nx
 import matplotlib.pyplot as plt
+
+from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.caret2networkx import make_graph_from_topic_association
+
+logger = LoggerFactory.create(__name__)
 
 
 def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph,
@@ -92,7 +96,7 @@ def dot2networkx(filename: str, ignore_unconnected=True) -> nx.classes.digraph.D
     else:
         graph = dot2networkx_nodetopic(graph_org)
 
-    print('len(connected_nodes) = ' + str(len(graph.nodes)))
+    logger.info('len(connected_nodes) = %d', len(graph.nodes))
 
     return graph
 

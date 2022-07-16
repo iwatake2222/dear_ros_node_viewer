@@ -19,18 +19,24 @@ from __future__ import annotations
 import os
 import argparse
 import json
-
+from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.graph_manager import GraphManager
 from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
 
+logger = LoggerFactory.create(__name__)
 
-def load_setting_json(setting_file):
+
+def load_setting_json(graph_file):
     """
     Load JSON setting file
     Set default values if the file doesn't exist
     """
+    if os.path.dirname(graph_file):
+        setting_file = os.path.dirname(graph_file) + '/setting.json'
+    else:
+        setting_file = './setting.json'
     if not os.path.isfile(setting_file):
-        print(f'Unable to find {setting_file}. Use default setting')
+        logger.info('Unable to find %s. Use default setting', setting_file)
         setting_file = os.path.dirname(__file__) + '/setting.json'
 
     if os.path.isfile(setting_file):
@@ -40,6 +46,7 @@ def load_setting_json(setting_file):
         group_setting = setting['group_setting']
     else:
         # Incase, default setting file was not found, too
+        logger.info('Unable to find %s. Use fixed default setting', setting_file)
         app_setting = {
             "window_size": [1920, 1080],
             "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
@@ -64,10 +71,10 @@ def parse_args():
         'graph_file', type=str, nargs='?', default='architecture.yaml',
         help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
               default=architecture.yaml')
-    parser.add_argument(
-        '--setting_file', type=str, default='setting.json',
-        help='default=setting.json')
     args = parser.parse_args()
+
+    logger.debug('args.graph_file = %s', args.graph_file)
+
     return args
 
 
@@ -77,21 +84,21 @@ def main():
     """
     args = parse_args()
 
-    app_setting, group_setting = load_setting_json(args.setting_file)
+    app_setting, group_setting = load_setting_json(args.graph_file)
 
     graph_manager = GraphManager(app_setting, group_setting)
     if '.yaml' in args.graph_file:
         try:
             graph_manager.load_graph_from_caret(args.graph_file)
         except FileNotFoundError as err:
-            print(err)
+            logger.error(err)
     elif '.dot' in args.graph_file:
         try:
             graph_manager.load_graph_from_dot(args.graph_file)
         except FileNotFoundError as err:
-            print(err)
+            logger.error(err)
     else:
-        print(f'Unknown file format: {args.graph_file}')
+        logger.error('Graph is not loaded. Unknown file format: %s', args.graph_file)
         # return   # keep going
 
     dpg = Networkx2DearPyGui(

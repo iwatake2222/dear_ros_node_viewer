@@ -15,7 +15,10 @@
 from __future__ import annotations
 import networkx as nx
 import dearpygui.dearpygui as dpg
+from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.graph_manager import GraphManager
+
+logger = LoggerFactory.create(__name__)
 
 
 class Networkx2DearPyGui:
@@ -297,7 +300,7 @@ class Networkx2DearPyGui:
                 try:
                     self.font_list[i] = dpg.add_font(font_path, i)
                 except SystemError:
-                    print('Failed to load font')
+                    logger.error('Failed to load font')
 
 
 if __name__ == '__main__':

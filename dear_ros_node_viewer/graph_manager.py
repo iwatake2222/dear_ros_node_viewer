@@ -19,10 +19,13 @@ import textwrap
 import json
 import networkx as nx
 import dearpygui.dearpygui as dpg
+from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.caret2networkx import caret2networkx
 from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.ros2networkx import Ros2Networkx
 from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
+
+logger = LoggerFactory.create(__name__)
 
 
 class GraphManager:
@@ -84,7 +87,7 @@ class GraphManager:
 
     def load_graph_postprocess(self, filename):
         """ Common process after loading graph """
-        self.dir = os.path.dirname(filename) if os.path.dirname(filename) != '' else './'
+        self.dir = os.path.dirname(filename) + '/' if os.path.dirname(filename) != '' else './'
         self.graph = place_node_by_group(self.graph, self.group_setting)
         self.graph = align_layout(self.graph)
         self._reset_internl_status()
@@ -215,9 +218,9 @@ class GraphManager:
 
     def load_layout(self):
         """ Load node layout """
-        filename = self.dir + '/layout.json'
+        filename = self.dir + 'layout.json'
         if not os.path.exists(filename):
-            print(filename + ' does not exist')
+            logger.info('%s does not exist. Use auto layout', filename)
             return
         with open(filename, encoding='UTF-8') as f_layout:
             pos_dict = json.load(f_layout)
@@ -286,8 +289,8 @@ class GraphManager:
         node_name_list = ''
         for node_id in dpg.get_selected_nodes(dpg_id_nodeeditor):
             node_name = get_key(self.dpg_bind['node_id'], node_id)
-            node_name = node_name.strip('"')
-            node_name_list += node_name + ', \n'
+            # node_name = node_name.strip('"')
+            node_name_list += node_name + ', n'
             print(node_name)
         print('---')
 
