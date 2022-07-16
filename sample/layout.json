@@ -1,0 +1,330 @@
+{
+    "\"/_ros2cli_2933807\"": [
+        3.4427425356870938,
+        -6.924353980630189
+    ],
+    "\"/planning/scenario_planning/lane_driving/behavior_planning/behavior_path_planner\"": [
+        5.375285743451968,
+        -4.7704475945414995
+    ],
+    "\"/control/external_cmd_converter\"": [
+        -0.8532199592780901,
+        -5.55161786836944
+    ],
+    "\"/control/vehicle_cmd_gate\"": [
+        0.26449818737620795,
+        -4.633932401057005
+    ],
+    "\"/control/external_cmd_selector\"": [
+        -1.9837364053215596,
+        -5.362013432974308
+    ],
+    "\"/control/operation_mode_transition_manager\"": [
+        1.0323961507264892,
+        -5.763974836011986
+    ],
+    "\"/control/shift_decider\"": [
+        -1.1006537474687363,
+        -4.315396949593184
+    ],
+    "\"/control/trajectory_follower/controller_node_exe\"": [
+        -2.3506209878111384,
+        -4.4064070785828475
+    ],
+    "\"/control/trajectory_follower/lane_departure_checker_node\"": [
+        -1.0537266497084414,
+        -3.1398494501433714
+    ],
+    "\"/system/emergency_handler\"": [
+        -3.4640730346690463,
+        -3.610068449923297
+    ],
+    "\"/system/system_error_monitor\"": [
+        -4.901748666052628,
+        -2.821313998679551
+    ],
+    "\"/localization/pose_estimator/ndt_scan_matcher\"": [
+        -3.331823940980942,
+        0.5233082416905619
+    ],
+    "\"/localization/pose_twist_fusion_filter/ekf_localizer\"": [
+        -3.2038409470892284,
+        1.4030728219239703
+    ],
+    "\"/localization/pose_twist_fusion_filter/stop_filter\"": [
+        -2.9137461609346778,
+        0.0
+    ],
+    "\"/localization/localization_error_monitor\"": [
+        -2.337822688421967,
+        1.5395880154084647
+    ],
+    "\"/localization/pose_twist_fusion_filter/twist2accel\"": [
+        -2.5042005804811946,
+        2.1159854990096636
+    ],
+    "\"/planning/scenario_planning/lane_driving/motion_planning/obstacle_avoidance_planner\"": [
+        5.853088920647698,
+        -1.38790446709236
+    ],
+    "\"/planning/scenario_planning/lane_driving/motion_planning/obstacle_stop_planner\"": [
+        6.945210468523654,
+        -0.9252696447282399
+    ],
+    "\"/planning/scenario_planning/lane_driving/motion_planning/surround_obstacle_checker\"": [
+        7.017734165062292,
+        -2.6772146277792515
+    ],
+    "\"/planning/scenario_planning/motion_velocity_smoother\"": [
+        9.201977260814202,
+        -1.3499835800133337
+    ],
+    "\"/planning/scenario_planning/parking/freespace_planner\"": [
+        9.564595743507391,
+        0.022752532247415736
+    ],
+    "\"/planning/scenario_planning/scenario_selector\"": [
+        8.101323513345466,
+        -0.5233082416905619
+    ],
+    "\"/system/ad_service_state_monitor\"": [
+        6.8854850713741875,
+        -6.6513235936612
+    ],
+    "\"/localization/twist_estimator/gyro_odometer\"": [
+        -3.8266915173622342,
+        1.2210525639446446
+    ],
+    "\"/localization/util/crop_box_filter_measurement_range\"": [
+        -4.16371340127708,
+        0.0
+    ],
+    "\"/localization/util/voxel_grid_downsample_filter\"": [
+        -4.462340387024412,
+        0.06825759674224721
+    ],
+    "\"/localization/util/random_downsample_filter\"": [
+        -3.8266915173622342,
+        0.29578291921640454
+    ],
+    "\"/perception/object_recognition/detection/centerpoint/lidar_centerpoint\"": [
+        -0.520464175159635,
+        0.0
+    ],
+    "\"/perception/object_recognition/detection/obstacle_pointcloud_based_validator_node\"": [
+        0.43087607943543554,
+        0.0
+    ],
+    "\"/perception/object_recognition/detection/clustering/detected_object_feature_remover\"": [
+        3.3446222403701134,
+        2.3890158859786523
+    ],
+    "\"/perception/object_recognition/detection/object_association_merger_dpc2205002_2933494_6574446187500067658\"": [
+        1.5272637271077814,
+        0.0
+    ],
+    "\"/perception/object_recognition/detection/clustering/euclidean_cluster\"": [
+        2.1927752953446915,
+        2.184243095751911
+    ],
+    "\"/perception/object_recognition/detection/clustering/shape_estimation\"": [
+        2.696175071318765,
+        2.298005756988989
+    ],
+    "\"/perception/object_recognition/detection/clustering/outlier_filter\"": [
+        1.7277704175381325,
+        2.1539063860886896
+    ],
+    "\"/perception/object_recognition/detection/detection_by_tracker/detection_by_tracker_node\"": [
+        4.010133808607024,
+        1.5547563702400753
+    ],
+    "\"/perception/object_recognition/detection/clustering/voxel_grid_filter_dpc2205002_2933494_2377808990459399101\"": [
+        0.8489538594816997,
+        1.9870544829409742
+    ],
+    "\"/perception/object_recognition/detection/object_association_merger_dpc2205002_2933494_5422522396033851179\"": [
+        2.5980547760017845,
+        0.3792088707902623
+    ],
+    "\"/perception/object_recognition/detection/object_lanelet_filter\"": [
+        3.4982018330401696,
+        0.7129126770856931
+    ],
+    "\"/perception/object_recognition/tracking/multi_object_tracker\"": [
+        4.197842199648203,
+        0.8039228060753559
+    ],
+    "\"/perception/object_recognition/detection/voxel_based_compare_map_filter\"": [
+        0.0,
+        0.6067341932644196
+    ],
+    "\"/perception/object_recognition/prediction/map_based_prediction\"": [
+        4.837757169106771,
+        0.8039228060753559
+    ],
+    "\"/planning/scenario_planning/parking/costmap_generator\"": [
+        8.587658890133978,
+        0.7129126770856931
+    ],
+    "\"/perception/obstacle_segmentation/common_ground_filter\"": [
+        -1.4462078309763629,
+        1.0314481285495134
+    ],
+    "\"/perception/obstacle_segmentation/occupancy_grid_map_outlier_filter\"": [
+        -0.5801895723091013,
+        1.4030728219239703
+    ],
+    "\"/perception/occupancy_grid_map/occupancy_grid_map_node\"": [
+        -1.2286367413604498,
+        1.888460176535506
+    ],
+    "\"/perception/obstacle_segmentation/crop_box_filter\"": [
+        -2.0008008045071213,
+        0.7356652093331087
+    ],
+    "\"/perception/traffic_light_recognition/traffic_light_classifier\"": [
+        6.1559820061914206,
+        2.3435108214838207
+    ],
+    "\"/perception/traffic_light_recognition/traffic_light_map_visualizer\"": [
+        7.09452396139732,
+        2.358679176315431
+    ],
+    "\"/perception/traffic_light_recognition/traffic_light_roi_visualizer\"": [
+        7.184112057121519,
+        3.026086788906293
+    ],
+    "\"/perception/traffic_light_recognition/traffic_light_image_decompressor\"": [
+        5.008401160962389,
+        2.889571595421798
+    ],
+    "\"/perception/traffic_light_recognition/traffic_light_ssd_fine_detector\"": [
+        5.810427922683794,
+        3.4811374338546077
+    ],
+    "\"/perception/traffic_light_recognition/traffic_light_map_based_detector\"": [
+        5.366753543859187,
+        4.315396949593184
+    ],
+    "\"/planning/mission_planning/mission_planner\"": [
+        3.0417291548263914,
+        -4.793200126788915
+    ],
+    "\"/planning/mission_planning/goal_pose_visualizer\"": [
+        4.25330149700128,
+        -5.3771817878059185
+    ],
+    "\"/planning/scenario_planning/external_velocity_limit_selector\"": [
+        8.101323513345466,
+        -1.9870544829409742
+    ],
+    "\"/planning/scenario_planning/lane_driving/behavior_planning/rtc_auto_approver\"": [
+        7.341957749587966,
+        -3.708662756328765
+    ],
+    "\"/planning/planning_diagnostics/planning_error_monitor\"": [
+        10.4092835031927,
+        -0.2502778547215731
+    ],
+    "\"/sensing/gnss/gnss_poser\"": [
+        -5.614187332049833,
+        0.9404379995598504
+    ],
+    "\"/localization/util/pose_initializer\"": [
+        -5.089457057093807,
+        1.236220918776255
+    ],
+    "\"/sensing/imu/imu_corrector\"": [
+        -4.2831641955760125,
+        1.236220918776255
+    ],
+    "\"/sensing/lidar/concatenate_data\"": [
+        -2.5042005804811946,
+        -1.0314481285495134
+    ],
+    "\"/sensing/lidar/left/crop_box_filter_mirror\"": [
+        -4.010133808607024,
+        -1.418241176755581
+    ],
+    "\"/sensing/lidar/left/velodyne_interpolate_node\"": [
+        -3.5237984318185123,
+        -1.418241176755581
+    ],
+    "\"/sensing/lidar/left/crop_box_filter_self\"": [
+        -4.53913018335944,
+        -1.418241176755581
+    ],
+    "\"/sensing/lidar/left/ring_outlier_filter\"": [
+        -3.0246647556408295,
+        -1.3499835800133337
+    ],
+    "\"/sensing/lidar/left/velodyne_convert_node\"": [
+        -5.008401160962389,
+        -1.418241176755581
+    ],
+    "\"/sensing/lidar/rear/crop_box_filter_mirror\"": [
+        -4.010133808607024,
+        -0.29578291921640454
+    ],
+    "\"/sensing/lidar/rear/velodyne_interpolate_node\"": [
+        -3.5237984318185123,
+        -0.29578291921640454
+    ],
+    "\"/sensing/lidar/rear/crop_box_filter_self\"": [
+        -4.53913018335944,
+        -0.29578291921640454
+    ],
+    "\"/sensing/lidar/rear/velodyne_convert_node\"": [
+        -5.008401160962389,
+        -0.29578291921640454
+    ],
+    "\"/sensing/lidar/rear/ring_outlier_filter\"": [
+        -3.0246647556408295,
+        -0.29578291921640454
+    ],
+    "\"/sensing/lidar/right/crop_box_filter_mirror\"": [
+        -4.010133808607024,
+        -1.0314481285495134
+    ],
+    "\"/sensing/lidar/right/velodyne_interpolate_node\"": [
+        -3.5237984318185123,
+        -1.0314481285495134
+    ],
+    "\"/sensing/lidar/right/crop_box_filter_self\"": [
+        -4.53913018335944,
+        -1.0314481285495134
+    ],
+    "\"/sensing/lidar/right/ring_outlier_filter\"": [
+        -3.0246647556408295,
+        -1.0314481285495134
+    ],
+    "\"/sensing/lidar/right/velodyne_convert_node\"": [
+        -5.008401160962389,
+        -1.0314481285495134
+    ],
+    "\"/sensing/lidar/top/crop_box_filter_mirror\"": [
+        -4.010133808607024,
+        -0.6143183706802249
+    ],
+    "\"/sensing/lidar/top/velodyne_interpolate_node\"": [
+        -3.5237984318185123,
+        -0.6143183706802249
+    ],
+    "\"/sensing/lidar/top/crop_box_filter_self\"": [
+        -4.53913018335944,
+        -0.6143183706802249
+    ],
+    "\"/sensing/lidar/top/ring_outlier_filter\"": [
+        -3.0246647556408295,
+        -0.6749917900066669
+    ],
+    "\"/sensing/lidar/top/velodyne_convert_node\"": [
+        -5.008401160962389,
+        -0.6143183706802249
+    ],
+    "\"/sensing/vehicle_velocity_converter_node\"": [
+        -4.603121680305296,
+        1.6305981443981277
+    ]
+}
