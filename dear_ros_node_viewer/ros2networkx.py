@@ -23,6 +23,7 @@ import threading
 import time
 import networkx as nx
 import matplotlib.pyplot as plt
+from dear_ros_node_viewer.logger_factory import LoggerFactory
 
 # Note: Use try-except to avoid error at pytest in GitHub Actions (todo)
 try:
@@ -33,6 +34,8 @@ try:
     from qt_dotgraph.pydotfactory import PydotFactory
 except ImportError:
     pass
+
+logger = LoggerFactory.create(__name__)
 
 
 class Ros2Networkx():
@@ -49,7 +52,7 @@ class Ros2Networkx():
     def node_loop(self):
         """thread main function"""
         while rclpy.ok():
-            print('Analyzing...')
+            logger.info('Analyzing...')
             self.executor_.spin_once(timeout_sec=1.0)
 
     def save_graph(self, filename: str = None) -> str:

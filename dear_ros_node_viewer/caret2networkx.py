@@ -19,6 +19,9 @@ from __future__ import annotations
 import networkx as nx
 import matplotlib.pyplot as plt
 import yaml
+from dear_ros_node_viewer.logger_factory import LoggerFactory
+
+logger = LoggerFactory.create(__name__)
 
 
 def quote_name(name: str) -> str:
@@ -75,7 +78,7 @@ def parse_target_path(yml, node_name_list, topic_pub_dict, topic_sub_dict):
                 if node['subscribe_topic_name'] != 'UNDEFINED':
                     topic_sub_dict[node['subscribe_topic_name']] = [node_name]
     else:
-        print('named_paths not found')
+        logger.warning('named_paths not found')
 
 
 def make_graph_from_topic_association(topic_pub_dict: dict[str, list[str]],
@@ -90,7 +93,7 @@ def make_graph_from_topic_association(topic_pub_dict: dict[str, list[str]],
             continue
         for node_pub in node_pub_list:
             for node_sub in node_sub_list:
-                # print(topic, node_pub, node_sub)
+                # logger.debug(topic, node_pub, node_sub)
                 graph.add_edge(node_pub, node_sub, label=topic)
 
     return graph
@@ -136,8 +139,8 @@ def caret2networkx(filename: str, target_path: str = 'all_graph',
     if not ignore_unconnected:
         graph.add_nodes_from(node_name_list)
 
-    print('len(connected_nodes) = ' + str(len(graph.nodes))
-          + ', len(nodes) = ' + str(len(node_name_list)))
+    logger.info('len(connected_nodes) = %d, len(nodes) = %d',
+                len(graph.nodes), len(node_name_list))
 
     return graph
 

@@ -16,6 +16,10 @@ from __future__ import annotations
 import numpy as np
 import networkx as nx
 
+from dear_ros_node_viewer.logger_factory import LoggerFactory
+
+logger = LoggerFactory.create(__name__)
+
 
 def place_node_by_group(graph, group_setting):
     """
