@@ -112,5 +112,5 @@ def main():
         # return   # keep going
 
     dpg = Networkx2DearPyGui(
-        app_setting, graph_manager, app_setting['window_size'][0], app_setting['window_size'][1])
-    dpg.start()
+        app_setting, graph_manager)
+    dpg.start(app_setting['window_size'][0], app_setting['window_size'][1])
