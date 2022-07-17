@@ -118,6 +118,9 @@ class Networkx2DearPyGui:
                 dpg.add_menu_item(label="First + Last", callback=self._cb_menu_edgename_firstlast)
                 dpg.add_menu_item(label="Last Only", callback=self._cb_menu_edgename_last)
 
+            with dpg.menu(label="CARET"):
+                dpg.add_menu_item(label="Show Callback", callback=self._cb_menu_caret_callbackbroup)
+
     def add_node_in_dpg(self):
         """ Add nodes and attributes """
         graph = self.graph_manager.graph
@@ -191,6 +194,31 @@ class Networkx2DearPyGui:
             with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) as attr_id:
                 text_id = dpg.add_text(default_value=edge)
                 self.graph_manager.add_dpg_nodeedge_idtext(node_name, edge, attr_id, text_id)
+
+        self.add_node_callbackgroup_in_dpg(graph, node_name)
+        self.graph_manager.display_callbackgroup(False)    # Hide by default
+
+    def add_node_callbackgroup_in_dpg(self, graph, node_name):
+        if 'callback_group_list' in graph.nodes[node_name]:
+            callback_group_list = graph.nodes[node_name]['callback_group_list']
+            for i, callback_group in enumerate(callback_group_list):
+                executor_name = callback_group['executor_name']
+                callback_group_name = callback_group['callback_group_name']
+                callback_group_type = callback_group['callback_group_type']
+                callback_group_name = self.graph_manager.omit_name(
+                    callback_group_name, GraphManager.OmitType.LAST)
+                callback_detail_list = callback_group['callback_detail_list']
+                color = callback_group['color']
+                with dpg.node_attribute() as attr_id:
+                    dpg.add_text('=== Callback Group [' + executor_name + '] ===', color=color)
+                    for callback_detail in callback_detail_list:
+                        callback_name = callback_detail['callback_name']
+                        callback_type = callback_detail['callback_type']
+                        description = callback_detail['description']
+                        description = self.graph_manager.omit_name(
+                            description, GraphManager.OmitType.LAST)
+                        dpg.add_text(default_value='cb_' + callback_type + ': ' + description, color=color)
+                    self.graph_manager.add_dpg_callbackgroup_id(callback_group['callback_group_name'], attr_id)
 
     def add_link_in_dpg(self, ):
         """ Add links between node I/O """
@@ -293,6 +321,15 @@ class Networkx2DearPyGui:
     def _cb_menu_edgename_last(self, sender, app_data, user_data):
         """ Display omitted name """
         self.graph_manager.update_edgename(GraphManager.OmitType.LAST)
+
+    def _cb_menu_caret_callbackbroup(self, sender, app_data, user_data):
+        """ Show callback group info """
+        if dpg.get_item_label(sender) == 'Show Callback':
+            self.graph_manager.display_callbackgroup(True)
+            dpg.set_item_label(sender, 'Hide Callback')
+        else:
+            self.graph_manager.display_callbackgroup(False)
+            dpg.set_item_label(sender, 'Show Callback')
 
     def _make_font_table(self, font_path):
         """Make font table"""

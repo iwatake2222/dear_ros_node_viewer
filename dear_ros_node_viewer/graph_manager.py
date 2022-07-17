@@ -21,6 +21,7 @@ import networkx as nx
 import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.caret2networkx import caret2networkx
+from dear_ros_node_viewer.caret_extend_callback_group import extend_callback_group
 from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.ros2networkx import Ros2Networkx
 from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
@@ -59,12 +60,14 @@ class GraphManager:
             'nodeedge_id': {},    # {"nodename_edgename": id}
             'nodeedge_text': {},  # {"nodename_edgename": id}
             'edge_color': {},     # {"edge": id}
+            'callbackgroup_id': {},     # {"callback_group_name": id}
         }
 
     def load_graph_from_caret(self, filename: str, target_path: str = 'all_graph'):
         """ load_graph_from_caret """
         self.graph = caret2networkx(filename, target_path,
                                     self.app_setting['ignore_unconnected_nodes'])
+        self.graph = extend_callback_group(filename, self.graph)
         self.load_graph_postprocess(filename)
 
     def load_graph_from_dot(self, filename: str):
@@ -102,6 +105,7 @@ class GraphManager:
         self.dpg_bind['nodeedge_id'].clear()
         self.dpg_bind['nodeedge_text'].clear()
         self.dpg_bind['edge_color'].clear()
+        self.dpg_bind['callbackgroup_id'].clear()
 
     def add_dpg_node_id(self, node_name, dpg_id):
         """ Add association b/w node_name and dpg_id """
@@ -120,6 +124,10 @@ class GraphManager:
     def add_dpg_edge_color(self, edge_name, edge_id):
         """ Add association b/w edge and dpg_id """
         self.dpg_bind['edge_color'][edge_name] = edge_id
+
+    def add_dpg_callbackgroup_id(self, callback_group_name, dpg_id):
+        """ Add association b/w callback_group_name and dpg_id """
+        self.dpg_bind['callbackgroup_id'][callback_group_name] = dpg_id
 
     def get_dpg_nodeedge_id(self, node_name, edge_name):
         """ Get association for a selected name """
@@ -249,15 +257,15 @@ class GraphManager:
     def update_nodename(self, omit_type: OmitType):
         """ Update node name """
         for node_name, node_id in self.dpg_bind['node_id'].items():
-            dpg.set_item_label(node_id, self._omit_name(node_name, omit_type))
+            dpg.set_item_label(node_id, self.omit_name(node_name, omit_type))
 
     def update_edgename(self, omit_type: OmitType):
         """ Update edge name """
         for nodeedge_name, text_id in self.dpg_bind['nodeedge_text'].items():
             edgename = nodeedge_name.split('###')[-1]
-            dpg.set_value(text_id, value=self._omit_name(edgename, omit_type))
+            dpg.set_value(text_id, value=self.omit_name(edgename, omit_type))
 
-    def _omit_name(self, name: str, omit_type: OmitType) -> str:
+    def omit_name(self, name: str, omit_type: OmitType) -> str:
         """ replace an original name to a name to be displayed """
         display_name = name.strip('"')
         if omit_type == self.OmitType.FULL:
@@ -295,3 +303,12 @@ class GraphManager:
         print('---')
 
         dpg.set_clipboard_text(node_name_list)
+
+    def display_callbackgroup(self, onoff: bool):
+        """Switch visibility of callback group in a node"""
+        callbackgroup_id = self.dpg_bind['callbackgroup_id']
+        for _, value in callbackgroup_id.items():
+            if onoff:
+                dpg.show_item(value)
+            else:
+                dpg.hide_item(value)
