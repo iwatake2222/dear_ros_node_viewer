@@ -17,6 +17,7 @@ import networkx as nx
 import dearpygui.dearpygui as dpg
 from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.graph_manager import GraphManager
+from dear_ros_node_viewer.graph_viewmodel import GraphViewModel
 
 logger = LoggerFactory.create(__name__)
 
@@ -32,19 +33,17 @@ class Networkx2DearPyGui:
     def __init__(
             self,
             app_setting: dict,
-            graph_manager: GraphManager,
-            window_width: int = 1920,
-            window_height: int = 1080):
+            graph_manager: GraphManager):
 
         self.app_setting: dict = app_setting
         self.graph_manager: GraphManager = graph_manager
-        self.window_size: list[int] = [window_width, window_height]
+        self.graph_viewmodel: GraphViewModel = GraphViewModel()
         self.font_size: int = 15
         self.font_list: dict[int, int] = {}
         self.dpg_window_id: int = -1
         self.dpg_id_editor: int = -1
 
-    def start(self):
+    def start(self, window_width: int = 1920, window_height: int = 1080):
         """ Start Dear PyGui context """
         dpg.create_context()
         self._make_font_table(self.app_setting['font'])
@@ -53,7 +52,7 @@ class Networkx2DearPyGui:
             dpg.add_key_press_handler(callback=self._cb_key_press)
 
         with dpg.window(
-                width=self.window_size[0], height=self.window_size[1],
+                width=window_width, height=window_height,
                 no_collapse=True, no_title_bar=True, no_move=True,
                 no_resize=True) as self.dpg_window_id:
 
@@ -67,8 +66,7 @@ class Networkx2DearPyGui:
 
         # Dear PyGui stuffs
         dpg.create_viewport(
-            title='Dear RosNodeViewer',
-            width=self.window_size[0], height=self.window_size[1])
+            title='Dear RosNodeViewer', width=window_width, height=window_height,)
         dpg.set_viewport_resize_callback(self._cb_resize)
         dpg.setup_dearpygui()
         dpg.show_viewport()
@@ -89,7 +87,8 @@ class Networkx2DearPyGui:
                     minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_editor:
                 self.add_node_in_dpg()
                 self.add_link_in_dpg()
-        self.graph_manager.load_layout()
+        self.graph_viewmodel.load_layout(self.graph_manager.graph,
+                                         self.graph_manager.dpg_bind, self.graph_manager.dir)
 
     def add_menu_in_dpg(self):
         """ Add menu bar """
@@ -128,8 +127,8 @@ class Networkx2DearPyGui:
             # Calculate position in window
             pos = graph.nodes[node_name]['pos']
             pos = [
-                pos[0] * self.graph_manager.graph_size[0],
-                pos[1] * self.graph_manager.graph_size[1]]
+                pos[0] * self.graph_viewmodel.graph_size[0],
+                pos[1] * self.graph_viewmodel.graph_size[1]]
 
             # Allocate node
             with dpg.node(label=node_name, pos=pos) as node_id:
@@ -167,8 +166,10 @@ class Networkx2DearPyGui:
 
                 # Add text for executor/callbackgroups
 
-        self.graph_manager.update_nodename(GraphManager.OmitType.FIRST_LAST)
-        self.graph_manager.update_edgename(GraphManager.OmitType.LAST)
+        self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.FIRST_LAST)
+        self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.LAST)
 
     def add_node_attr_in_dpg(self, graph, node_name):
         """ Add attributes in node """
@@ -193,32 +194,37 @@ class Networkx2DearPyGui:
         for edge in edge_list_pub:
             with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) as attr_id:
                 text_id = dpg.add_text(default_value=edge)
-                self.graph_manager.add_dpg_nodeedge_idtext(node_name, edge, attr_id, text_id)
+                self.graph_manager.add_dpg_nodeedge_idtext(node_name, edge,
+                                                           attr_id, text_id)
 
         self.add_node_callbackgroup_in_dpg(graph, node_name)
-        self.graph_manager.display_callbackgroup(False)    # Hide by default
+        # Hide by default
+        self.graph_viewmodel.display_callbackgroup(self.graph_manager.dpg_bind, False)
 
     def add_node_callbackgroup_in_dpg(self, graph, node_name):
+        """ Add callback group information """
         if 'callback_group_list' in graph.nodes[node_name]:
             callback_group_list = graph.nodes[node_name]['callback_group_list']
-            for i, callback_group in enumerate(callback_group_list):
+            for callback_group in callback_group_list:
                 executor_name = callback_group['executor_name']
                 callback_group_name = callback_group['callback_group_name']
-                callback_group_type = callback_group['callback_group_type']
-                callback_group_name = self.graph_manager.omit_name(
-                    callback_group_name, GraphManager.OmitType.LAST)
+                # callback_group_type = callback_group['callback_group_type']
+                callback_group_name = self.graph_viewmodel.omit_name(
+                    callback_group_name, GraphViewModel.OmitType.LAST)
                 callback_detail_list = callback_group['callback_detail_list']
                 color = callback_group['color']
                 with dpg.node_attribute() as attr_id:
                     dpg.add_text('=== Callback Group [' + executor_name + '] ===', color=color)
                     for callback_detail in callback_detail_list:
-                        callback_name = callback_detail['callback_name']
+                        # callback_name = callback_detail['callback_name']
                         callback_type = callback_detail['callback_type']
                         description = callback_detail['description']
-                        description = self.graph_manager.omit_name(
-                            description, GraphManager.OmitType.LAST)
-                        dpg.add_text(default_value='cb_' + callback_type + ': ' + description, color=color)
-                    self.graph_manager.add_dpg_callbackgroup_id(callback_group['callback_group_name'], attr_id)
+                        description = self.graph_viewmodel.omit_name(
+                            description, GraphViewModel.OmitType.LAST)
+                        dpg.add_text(default_value='cb_' + callback_type + ': ' + description,
+                                     color=color)
+                    self.graph_manager.add_dpg_callbackgroup_id(
+                        callback_group['callback_group_name'], attr_id)
 
     def add_link_in_dpg(self, ):
         """ Add links between node I/O """
@@ -260,32 +266,35 @@ class Networkx2DearPyGui:
         restore node color when re-clicked
         """
         node_id = app_data[1]
-        self.graph_manager.high_light_node(node_id)
+        self.graph_viewmodel.high_light_node(self.graph_manager.graph, self.graph_manager.dpg_bind,
+                                             self.graph_manager.node_selected_dict, node_id)
 
     def _cb_wheel(self, sender, app_data):
         """
         callback function for mouse wheel in node editor(Dear PyGui)
         zoom in/out graph according to wheel direction
         """
-        self.graph_manager.zoom_inout(app_data > 0)
+        self.graph_viewmodel.zoom_inout(self.graph_manager.dpg_bind, app_data > 0)
 
     def _cb_key_press(self, sender, app_data):
         """callback function for key press"""
         if app_data == 67:
             # ctrl-c
-            self.graph_manager.copy_selected_node_name(self.dpg_id_editor)
+            self.graph_viewmodel.copy_selected_node_name(self.graph_manager.dpg_bind,
+                                                         self.dpg_id_editor)
 
     def _cb_menu_layout_reset(self, sender, app_data, user_data):
         """ Reset layout """
-        self.graph_manager.reset_layout()
+        self.graph_viewmodel.reset_layout(self.graph_manager.graph, self.graph_manager.dpg_bind)
 
     def _cb_menu_layout_save(self, sender, app_data, user_data):
         """ Save current layout """
-        self.graph_manager.save_layout()
+        self.graph_viewmodel.save_layout(self.graph_manager.dpg_bind, self.graph_manager.dir)
 
     def _cb_menu_layout_load(self, sender, app_data, user_data):
         """ Load layout from file """
-        self.graph_manager.load_layout()
+        self.graph_viewmodel.load_layout(self.graph_manager.graph,
+                                         self.graph_manager.dpg_bind, self.graph_manager.dir)
 
     def _cb_menu_graph_current(self, sender, app_data, user_data):
         """ Update graph using current ROS status """
@@ -296,39 +305,46 @@ class Networkx2DearPyGui:
         """ Change font size """
         self.font_size = app_data
         if self.font_size in self.font_list:
-            self.graph_manager.update_font(self.font_list[self.font_size])
+            self.graph_viewmodel.update_font(self.graph_manager.dpg_bind,
+                                             self.font_list[self.font_size])
 
     def _cb_menu_nodename_full(self, sender, app_data, user_data):
         """ Display full name """
-        self.graph_manager.update_nodename(GraphManager.OmitType.FULL)
+        self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.FULL)
 
     def _cb_menu_nodename_firstlast(self, sender, app_data, user_data):
         """ Display omitted name """
-        self.graph_manager.update_nodename(GraphManager.OmitType.FIRST_LAST)
+        self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.FIRST_LAST)
 
     def _cb_menu_nodename_last(self, sender, app_data, user_data):
         """ Display omitted name """
-        self.graph_manager.update_nodename(GraphManager.OmitType.LAST)
+        self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.LAST)
 
     def _cb_menu_edgename_full(self, sender, app_data, user_data):
         """ Display full name """
-        self.graph_manager.update_edgename(GraphManager.OmitType.FULL)
+        self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.FULL)
 
     def _cb_menu_edgename_firstlast(self, sender, app_data, user_data):
         """ Display omitted name """
-        self.graph_manager.update_edgename(GraphManager.OmitType.FIRST_LAST)
+        self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.FIRST_LAST)
 
     def _cb_menu_edgename_last(self, sender, app_data, user_data):
         """ Display omitted name """
-        self.graph_manager.update_edgename(GraphManager.OmitType.LAST)
+        self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
+                                             GraphViewModel.OmitType.LAST)
 
     def _cb_menu_caret_callbackbroup(self, sender, app_data, user_data):
         """ Show callback group info """
         if dpg.get_item_label(sender) == 'Show Callback':
-            self.graph_manager.display_callbackgroup(True)
+            self.graph_viewmodel.display_callbackgroup(self.graph_manager.dpg_bind, True)
             dpg.set_item_label(sender, 'Hide Callback')
         else:
-            self.graph_manager.display_callbackgroup(False)
+            self.graph_viewmodel.display_callbackgroup(self.graph_manager.dpg_bind, False)
             dpg.set_item_label(sender, 'Show Callback')
 
     def _make_font_table(self, font_path):
