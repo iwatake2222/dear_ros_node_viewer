@@ -73,8 +73,9 @@ class GraphManager:
     def load_graph_postprocess(self, filename):
         """ Common process after loading graph """
         self.dir = os.path.dirname(filename) + '/' if os.path.dirname(filename) != '' else './'
-        self.graph = place_node_by_group(self.graph, self.group_setting)
-        self.graph = align_layout(self.graph)
+        if len(self.graph.nodes):
+            self.graph = place_node_by_group(self.graph, self.group_setting)
+            self.graph = align_layout(self.graph)
         self._reset_internl_status()
 
     def _reset_internl_status(self):
