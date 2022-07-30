@@ -165,8 +165,8 @@ def create_dict_node_callbackgroup(yml):
     return dict_node_cbgroup
 
 
-def extend_callback_group(filename: str, graph: nx.classes.digraph.DiGraph
-                         )-> nx.classes.digraph.DiGraph:
+def extend_callback_group(filename: str,
+                          graph: nx.classes.digraph.DiGraph) -> nx.classes.digraph.DiGraph:
     """Add callback group info to a graph"""
     with open(filename, encoding='UTF-8') as file:
         yml = yaml.safe_load(file)
