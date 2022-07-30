@@ -38,7 +38,7 @@ wget https://raw.githubusercontent.com/takeshi-iwanari/dear_ros_node_viewer/main
 dear_ros_node_viewer architecture_autoware.yaml
 ```
 
-- Short operation guide:
+- Quick operation guide:
     - Middle button drag: move graph area
     - Mouse scroll: zoom in/out (zoom function is tentative)
 
