@@ -22,7 +22,7 @@ from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.ros2networkx import Ros2Networkx
 from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
 from dear_ros_node_viewer.graph_manager import GraphManager
-from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
+from dear_ros_node_viewer.graph_view import GraphView
 
 
 __copyright__ = 'Copyright 2022 Tier IV, Inc.'
@@ -39,7 +39,7 @@ __all__ = [
     'place_node_by_group',
     'align_layout',
     'GraphManager',
-    'Networkx2DearPyGui'
+    'GraphView'
 ]
 
 print('Dear ROS Node Viewer version ' + __version__)

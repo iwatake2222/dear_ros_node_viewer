@@ -20,8 +20,7 @@ import os
 import argparse
 import json
 from dear_ros_node_viewer.logger_factory import LoggerFactory
-from dear_ros_node_viewer.graph_manager import GraphManager
-from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
+from dear_ros_node_viewer.graph_view import GraphView
 
 logger = LoggerFactory.create(__name__)
 
@@ -95,22 +94,7 @@ def main():
     args = parse_args()
 
     app_setting, group_setting = load_setting_json(args.graph_file)
+    graph_filename = args.graph_file
 
-    graph_manager = GraphManager(app_setting, group_setting)
-    if '.yaml' in args.graph_file:
-        try:
-            graph_manager.load_graph_from_caret(args.graph_file)
-        except FileNotFoundError as err:
-            logger.error(err)
-    elif '.dot' in args.graph_file:
-        try:
-            graph_manager.load_graph_from_dot(args.graph_file)
-        except FileNotFoundError as err:
-            logger.error(err)
-    else:
-        logger.error('Graph is not loaded. Unknown file format: %s', args.graph_file)
-        # return   # keep going
-
-    dpg = Networkx2DearPyGui(
-        app_setting, graph_manager)
-    dpg.start(app_setting['window_size'][0], app_setting['window_size'][1])
+    dpg = GraphView(app_setting, group_setting)
+    dpg.start(graph_filename, app_setting['window_size'][0], app_setting['window_size'][1])
