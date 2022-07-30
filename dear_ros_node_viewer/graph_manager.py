@@ -66,7 +66,7 @@ class GraphManager:
         """ Common process after loading graph """
         self.dir = os.path.dirname(filename) + '/' if os.path.dirname(filename) != '' else './'
         self.clear_caret_path_dict()
-        self.filter_topic() # delete topic before node
+        self.filter_topic()     # delete topic before node
         self.filter_node()
         if len(self.graph.nodes):
             self.graph = place_node_by_group(self.graph, self.group_setting)
@@ -89,6 +89,7 @@ class GraphManager:
         remove_edge_list = []
         for edge in self.graph.edges:
             topic_name = self.graph.edges[edge]['label']
+            topic_name = topic_name.strip('"')
             for pattern in self.app_setting['ignore_topic_list']:
                 if re.fullmatch(pattern, topic_name):
                     remove_edge_list.append(edge)

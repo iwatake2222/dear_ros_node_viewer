@@ -10,7 +10,8 @@
         "ignore_topic_list": [
             "/topic_name/to_be_ignored/in_regularexpression",
             "/tf",
-            "/tf_static"
+            "/tf_static",
+            "/diagnostics"
         ]
     },
     "group_setting": {
