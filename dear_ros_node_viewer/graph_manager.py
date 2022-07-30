@@ -14,6 +14,7 @@
 """Class to manage graph (NetworkX)"""
 from __future__ import annotations
 import os
+import re
 import networkx as nx
 from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.caret2networkx import caret2networkx
@@ -65,9 +66,40 @@ class GraphManager:
         """ Common process after loading graph """
         self.dir = os.path.dirname(filename) + '/' if os.path.dirname(filename) != '' else './'
         self.clear_caret_path_dict()
+        self.filter_topic() # delete topic before node
+        self.filter_node()
         if len(self.graph.nodes):
             self.graph = place_node_by_group(self.graph, self.group_setting)
             self.graph = align_layout(self.graph)
+
+    def filter_node(self):
+        """Remove nodes which match filter setting"""
+        remove_node_list = []
+        for node_name in self.graph.nodes:
+            node_name_org = node_name.strip('"')
+            for pattern in self.app_setting['ignore_node_list']:
+                if re.fullmatch(pattern, node_name_org):
+                    remove_node_list.append(node_name)
+                    break
+        self.graph.remove_nodes_from(remove_node_list)
+        logger.info('%s nodes are removed by filter', len(remove_node_list))
+
+    def filter_topic(self):
+        """Remove topics which match filter setting"""
+        remove_edge_list = []
+        for edge in self.graph.edges:
+            topic_name = self.graph.edges[edge]['label']
+            for pattern in self.app_setting['ignore_topic_list']:
+                if re.fullmatch(pattern, topic_name):
+                    remove_edge_list.append(edge)
+                    break
+        self.graph.remove_edges_from(remove_edge_list)
+        logger.info('%s topics are removed by filter', len(remove_edge_list))
+
+        if self.app_setting['ignore_unconnected_nodes']:
+            isolated_node_list = list(nx.isolates(self.graph))
+            logger.info('%s nodes are removed due to isolated', len(isolated_node_list))
+            self.graph.remove_nodes_from(isolated_node_list)
 
     def clear_caret_path_dict(self):
         """ Clear CARET path dict """

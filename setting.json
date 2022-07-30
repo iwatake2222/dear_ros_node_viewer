@@ -2,7 +2,16 @@
     "app_setting": {
         "window_size": [1920, 1080],
         "font": "font/roboto/Roboto-Medium.ttf",
-        "ignore_unconnected_nodes": true
+        "ignore_unconnected_nodes": true,
+        "ignore_node_list": [
+            "/node_name/to_be_ignored/in_regularexpression",
+            "/wild_card/is/.*"
+        ],
+        "ignore_topic_list": [
+            "/topic_name/to_be_ignored/in_regularexpression",
+            "/tf",
+            "/tf_static"
+        ]
     },
     "group_setting": {
         "/sensing": {
