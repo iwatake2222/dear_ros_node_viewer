@@ -18,6 +18,7 @@ import networkx as nx
 from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.caret2networkx import caret2networkx
 from dear_ros_node_viewer.caret_extend_callback_group import extend_callback_group
+from dear_ros_node_viewer.caret_extend_path import get_path_dict
 from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.ros2networkx import Ros2Networkx
 from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
@@ -40,15 +41,7 @@ class GraphManager:
                                     self.app_setting['ignore_unconnected_nodes'])
         self.graph = extend_callback_group(filename, self.graph)
         self.load_graph_postprocess(filename)
-        self.caret_path_dict['end-to-end'] = [
-            '"/node_src"',
-            '"/node_src_1"',
-            '"/node_sub3pub1"',
-        ]
-        self.caret_path_dict['lidar-concat'] = [
-            '"/node_src"',
-            '"/node_src_2"',
-        ]
+        self.caret_path_dict = get_path_dict(filename)
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
