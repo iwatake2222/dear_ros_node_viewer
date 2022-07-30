@@ -189,7 +189,7 @@ class GraphView:
             with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) as attr_id:
                 text_id = dpg.add_text(default_value=edge)
                 self.graph_viewmodel.add_dpg_nodeedge_idtext(node_name, edge,
-                                                           attr_id, text_id)
+                                                             attr_id, text_id)
 
         # Add text for executor/callbackgroups
         self.add_node_callbackgroup_in_dpg(node_name)
@@ -231,6 +231,7 @@ class GraphView:
                 edge_id = dpg.add_node_link(
                     self.graph_viewmodel.get_dpg_nodeedge_id(edge[0], label),
                     self.graph_viewmodel.get_dpg_nodeedge_id(edge[1], label))
+                self.graph_viewmodel.add_dpg_id_edge(label, edge_id)
             else:
                 edge_id = dpg.add_node_link(
                     self.graph_viewmodel.get_dpg_nodeedge_id(edge[0], 'out'),

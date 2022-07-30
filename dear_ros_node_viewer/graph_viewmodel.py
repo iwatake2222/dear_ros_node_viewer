@@ -50,11 +50,12 @@ class GraphViewModel:
         # bind list to components in PyGui
         self.dpg_bind = {
             'node_id': {},           # {"node_name": id}
-            'node_color': {},        # {"node_name": id}
-            'nodeedge_id': {},       # {"nodename_edgename": id}
-            'nodeedge_text': {},     # {"nodename_edgename": id}
-            'edge_color': {},        # {"edge": id}
-            'callbackgroup_id': {},  # {"callback_group_name": id}
+            'node_color': {},        # {"node_name": color_id}
+            'nodeedge_id': {},       # {"nodename_edgename": attr_id}
+            'nodeedge_text': {},     # {"nodename_edgename": text_id}
+            'id_edge': {},           # {id: "edge_name"}
+            'edge_color': {},        # {edge_obj: color_id}
+            'callbackgroup_id': {},  # {"callback_group_name": attr_id}
         }
 
     def get_graph(self) -> nx.DiGraph:
@@ -89,6 +90,7 @@ class GraphViewModel:
         self.dpg_bind['node_color'].clear()
         self.dpg_bind['nodeedge_id'].clear()
         self.dpg_bind['nodeedge_text'].clear()
+        self.dpg_bind['id_edge'].clear()
         self.dpg_bind['edge_color'].clear()
         self.dpg_bind['callbackgroup_id'].clear()
         self.node_selected_dict.clear()
@@ -108,6 +110,10 @@ class GraphViewModel:
         key = self._make_nodeedge_key(node_name, edge_name)
         self.dpg_bind['nodeedge_id'][key] = attr_id
         self.dpg_bind['nodeedge_text'][key] = text_id
+
+    def add_dpg_id_edge(self, edge_name, edge_id):
+        """ Add association b/w edge and dpg_id """
+        self.dpg_bind['id_edge'][edge_id] = edge_name
 
     def add_dpg_edge_color(self, edge_name, edge_id):
         """ Add association b/w edge and dpg_id """
@@ -284,15 +290,25 @@ class GraphViewModel:
                     return key
             return None
 
-        node_name_list = ''
-        for node_id in dpg.get_selected_nodes(dpg_id_nodeeditor):
-            node_name = get_key(self.dpg_bind['node_id'], node_id)
-            # node_name = node_name.strip('"')
-            node_name_list += node_name + ',\n'
-            print(node_name)
+        copied_str = ''
+        selected_nodes = dpg.get_selected_nodes(dpg_id_nodeeditor)
+        selected_links = dpg.get_selected_links(dpg_id_nodeeditor)
+        if len(selected_nodes) == 1:
+            copied_str = get_key(self.dpg_bind['node_id'], selected_nodes[0])
+            copied_str = copied_str.strip('"')
+            print(copied_str)
+        elif len(selected_links) == 1:
+            copied_str = self.dpg_bind['id_edge'][selected_links[0]]
+            copied_str = copied_str.strip('"')
+            print(copied_str)
+        elif len(selected_nodes) > 1:
+            for node_id in selected_nodes:
+                node_name = get_key(self.dpg_bind['node_id'], node_id)
+                node_name = node_name.strip('"')
+                copied_str += '"' + node_name + '",\n'
+                print(node_name)
         print('---')
-
-        dpg.set_clipboard_text(node_name_list)
+        dpg.set_clipboard_text(copied_str)
 
     def display_callbackgroup(self, onoff: bool):
         """Switch visibility of callback group in a node"""
