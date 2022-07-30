@@ -88,7 +88,8 @@ class GraphView:
 
         # Add CARET path
         for path_name, _ in self.graph_viewmodel.graph_manager.caret_path_dict.items():
-            dpg.add_menu_item(label=path_name, callback=self._cb_menu_caret_path, parent=self.dpg_id_caret_path)
+            dpg.add_menu_item(label=path_name, callback=self._cb_menu_caret_path,
+                              parent=self.dpg_id_caret_path)
 
     def add_menu_in_dpg(self):
         """ Add menu bar """

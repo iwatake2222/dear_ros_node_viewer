@@ -41,7 +41,7 @@ class GraphManager:
                                     self.app_setting['ignore_unconnected_nodes'])
         self.graph = extend_callback_group(filename, self.graph)
         self.load_graph_postprocess(filename)
-        self.caret_path_dict = get_path_dict(filename)
+        self.caret_path_dict.update(get_path_dict(filename))
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
@@ -70,5 +70,6 @@ class GraphManager:
             self.graph = align_layout(self.graph)
 
     def clear_caret_path_dict(self):
+        """ Clear CARET path dict """
         self.caret_path_dict.clear()
         self.caret_path_dict['<< CLEAR >>'] = []

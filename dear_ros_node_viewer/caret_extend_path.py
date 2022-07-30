@@ -29,8 +29,8 @@ def get_path_dict(filename: str) -> dict:
             path_name = path_info['path_name']
             node_chain = path_info['node_chain']
             node_name_list = []
-            for n in node_chain:
-                node_name_list.append(quote_name(n['node_name']))
+            for node in node_chain:
+                node_name_list.append(quote_name(node['node_name']))
             path_dict[path_name] = node_name_list
 
     return path_dict
