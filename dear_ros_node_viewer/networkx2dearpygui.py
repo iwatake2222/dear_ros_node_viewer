@@ -95,11 +95,13 @@ class Networkx2DearPyGui:
         with dpg.menu_bar():
             with dpg.menu(label="Layout"):
                 dpg.add_menu_item(label="Reset", callback=self._cb_menu_layout_reset)
-                dpg.add_menu_item(label="Save", callback=self._cb_menu_layout_save)
-                dpg.add_menu_item(label="Load", callback=self._cb_menu_layout_load)
+                dpg.add_menu_item(label="Save", callback=self._cb_menu_layout_save, shortcut='(s)')
+                dpg.add_menu_item(label="Load", callback=self._cb_menu_layout_load, shortcut='(l)')
 
-            with dpg.menu(label="Graph"):
-                dpg.add_menu_item(label="Running ROS",
+            dpg.add_menu_item(label="Copy", callback=self._cb_menu_copy, shortcut='(c)')
+
+            with dpg.menu(label="Analyze"):
+                dpg.add_menu_item(label="Current ROS",
                                   callback=self._cb_menu_graph_current)
 
             with dpg.menu(label="Font"):
@@ -278,25 +280,31 @@ class Networkx2DearPyGui:
 
     def _cb_key_press(self, sender, app_data):
         """callback function for key press"""
-        if app_data == 67:
-            # ctrl-c
-            self.graph_viewmodel.copy_selected_node_name(self.graph_manager.dpg_bind,
-                                                         self.dpg_id_editor)
+        if app_data == ord('S'):
+            self._cb_menu_layout_save()
+        elif app_data == ord('L'):
+            self._cb_menu_layout_load()
+        elif app_data == ord('C'):
+            self._cb_menu_copy()
 
-    def _cb_menu_layout_reset(self, sender, app_data, user_data):
+    def _cb_menu_layout_reset(self):
         """ Reset layout """
         self.graph_viewmodel.reset_layout(self.graph_manager.graph, self.graph_manager.dpg_bind)
 
-    def _cb_menu_layout_save(self, sender, app_data, user_data):
+    def _cb_menu_layout_save(self):
         """ Save current layout """
         self.graph_viewmodel.save_layout(self.graph_manager.dpg_bind, self.graph_manager.dir)
 
-    def _cb_menu_layout_load(self, sender, app_data, user_data):
+    def _cb_menu_layout_load(self):
         """ Load layout from file """
         self.graph_viewmodel.load_layout(self.graph_manager.graph,
                                          self.graph_manager.dpg_bind, self.graph_manager.dir)
 
-    def _cb_menu_graph_current(self, sender, app_data, user_data):
+    def _cb_menu_copy(self):
+        self.graph_viewmodel.copy_selected_node_name(self.graph_manager.dpg_bind,
+                                                     self.dpg_id_editor)
+
+    def _cb_menu_graph_current(self):
         """ Update graph using current ROS status """
         self.graph_manager.load_graph_from_running_ros()
         self.update_node_editor()
@@ -308,32 +316,32 @@ class Networkx2DearPyGui:
             self.graph_viewmodel.update_font(self.graph_manager.dpg_bind,
                                              self.font_list[self.font_size])
 
-    def _cb_menu_nodename_full(self, sender, app_data, user_data):
+    def _cb_menu_nodename_full(self):
         """ Display full name """
         self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
                                              GraphViewModel.OmitType.FULL)
 
-    def _cb_menu_nodename_firstlast(self, sender, app_data, user_data):
+    def _cb_menu_nodename_firstlast(self):
         """ Display omitted name """
         self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
                                              GraphViewModel.OmitType.FIRST_LAST)
 
-    def _cb_menu_nodename_last(self, sender, app_data, user_data):
+    def _cb_menu_nodename_last(self):
         """ Display omitted name """
         self.graph_viewmodel.update_nodename(self.graph_manager.dpg_bind,
                                              GraphViewModel.OmitType.LAST)
 
-    def _cb_menu_edgename_full(self, sender, app_data, user_data):
+    def _cb_menu_edgename_full(self):
         """ Display full name """
         self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
                                              GraphViewModel.OmitType.FULL)
 
-    def _cb_menu_edgename_firstlast(self, sender, app_data, user_data):
+    def _cb_menu_edgename_firstlast(self):
         """ Display omitted name """
         self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
                                              GraphViewModel.OmitType.FIRST_LAST)
 
-    def _cb_menu_edgename_last(self, sender, app_data, user_data):
+    def _cb_menu_edgename_last(self):
         """ Display omitted name """
         self.graph_viewmodel.update_edgename(self.graph_manager.dpg_bind,
                                              GraphViewModel.OmitType.LAST)
