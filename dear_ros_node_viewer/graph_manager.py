@@ -18,6 +18,7 @@ import networkx as nx
 from dear_ros_node_viewer.logger_factory import LoggerFactory
 from dear_ros_node_viewer.caret2networkx import caret2networkx
 from dear_ros_node_viewer.caret_extend_callback_group import extend_callback_group
+from dear_ros_node_viewer.caret_extend_path import get_path_dict
 from dear_ros_node_viewer.dot2networkx import dot2networkx
 from dear_ros_node_viewer.ros2networkx import Ros2Networkx
 from dear_ros_node_viewer.graph_layout import place_node_by_group, align_layout
@@ -32,6 +33,7 @@ class GraphManager:
         self.group_setting = group_setting
         self.dir = './'
         self.graph: nx.DiGraph = nx.DiGraph()
+        self.caret_path_dict: dict = {}
 
     def load_graph_from_caret(self, filename: str, target_path: str = 'all_graph'):
         """ load_graph_from_caret """
@@ -39,6 +41,7 @@ class GraphManager:
                                     self.app_setting['ignore_unconnected_nodes'])
         self.graph = extend_callback_group(filename, self.graph)
         self.load_graph_postprocess(filename)
+        self.caret_path_dict.update(get_path_dict(filename))
 
     def load_graph_from_dot(self, filename: str):
         """ load_graph_from_dot """
@@ -61,6 +64,12 @@ class GraphManager:
     def load_graph_postprocess(self, filename):
         """ Common process after loading graph """
         self.dir = os.path.dirname(filename) + '/' if os.path.dirname(filename) != '' else './'
+        self.clear_caret_path_dict()
         if len(self.graph.nodes):
             self.graph = place_node_by_group(self.graph, self.group_setting)
             self.graph = align_layout(self.graph)
+
+    def clear_caret_path_dict(self):
+        """ Clear CARET path dict """
+        self.caret_path_dict.clear()
+        self.caret_path_dict['<< CLEAR >>'] = []

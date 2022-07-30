@@ -40,6 +40,7 @@ class GraphView:
         self.font_list: dict[int, int] = {}
         self.dpg_window_id: int = -1
         self.dpg_id_editor: int = -1
+        self.dpg_id_caret_path: int = -1
 
     def start(self, graph_filename: str, window_width: int = 1920, window_height: int = 1080):
         """ Start Dear PyGui context """
@@ -85,6 +86,11 @@ class GraphView:
                 self.add_link_in_dpg()
         self.graph_viewmodel.load_layout()
 
+        # Add CARET path
+        for path_name, _ in self.graph_viewmodel.graph_manager.caret_path_dict.items():
+            dpg.add_menu_item(label=path_name, callback=self._cb_menu_caret_path,
+                              parent=self.dpg_id_caret_path)
+
     def add_menu_in_dpg(self):
         """ Add menu bar """
         with dpg.menu_bar():
@@ -116,6 +122,8 @@ class GraphView:
 
             with dpg.menu(label="CARET"):
                 dpg.add_menu_item(label="Show Callback", callback=self._cb_menu_caret_callbackbroup)
+                with dpg.menu(label="PATH") as self.dpg_id_caret_path:
+                    pass
 
     def add_node_in_dpg(self):
         """ Add nodes and attributes """
@@ -339,6 +347,11 @@ class GraphView:
         else:
             self.graph_viewmodel.display_callbackgroup(False)
             dpg.set_item_label(sender, 'Show Callback')
+
+    def _cb_menu_caret_path(self, sender, app_data, user_data):
+        """ High light selected CARET path """
+        path_name = dpg.get_item_label(sender)
+        self.graph_viewmodel.high_light_caret_path(path_name)
 
     def _make_font_table(self, font_path):
         """Make font table"""

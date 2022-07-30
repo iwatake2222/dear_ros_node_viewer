@@ -19,27 +19,10 @@ from __future__ import annotations
 import random
 import networkx as nx
 import yaml
+from dear_ros_node_viewer.caret2networkx import quote_name
 from dear_ros_node_viewer.logger_factory import LoggerFactory
 
 logger = LoggerFactory.create(__name__)
-
-
-def quote_name(name: str) -> str:
-    """
-    Quote name, because pydot requires. https://github.com/pydot/pydot/issues/258
-
-    Parameters
-    ----------
-    name : str
-        original name
-
-    Returns
-    -------
-    modified_name : str
-        name with '"'
-    """
-    modified_name = '"' + name + '"'
-    return modified_name
 
 
 def create_dict_cbgroup2executor(yml: yaml) -> tuple[dict, dict]:

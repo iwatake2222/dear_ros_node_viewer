@@ -31,6 +31,7 @@ class GraphViewModel:
     COLOR_HIGHLIGHT_SELECTED = [0, 0, 64]
     COLOR_HIGHLIGHT_PUB = [0, 64, 0]
     COLOR_HIGHLIGHT_SUB = [64, 0, 0]
+    COLOR_HIGHLIGHT_CARET_PATH = [0, 96, 0]
     COLOR_HIGHLIGHT_DEF = [64, 64, 64]
     COLOR_HIGHLIGHT_EDGE = [196, 196, 196]
 
@@ -318,3 +319,22 @@ class GraphViewModel:
                 dpg.show_item(value)
             else:
                 dpg.hide_item(value)
+
+    def high_light_caret_path(self, path_name):
+        """ High light the selected CARET path """
+        # Disable high light for all nodes
+        graph = self.get_graph()
+        for node_name in graph.nodes:
+            dpg.set_value(
+                self.dpg_bind['node_color'][node_name],
+                self.COLOR_HIGHLIGHT_DEF)
+
+        # Then, high light nodes in the path
+        node_list = self.graph_manager.caret_path_dict[path_name]
+        for node_name in node_list:
+            if node_name in self.dpg_bind['node_color']:
+                dpg.set_value(
+                    self.dpg_bind['node_color'][node_name],
+                    self.COLOR_HIGHLIGHT_CARET_PATH)
+            else:
+                logger.error('%s is not included in the current graph', node_name)
