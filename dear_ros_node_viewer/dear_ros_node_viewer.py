@@ -20,7 +20,7 @@ import os
 import argparse
 import json
 from dear_ros_node_viewer.logger_factory import LoggerFactory
-from dear_ros_node_viewer.networkx2dearpygui import Networkx2DearPyGui
+from dear_ros_node_viewer.graph_view import GraphView
 
 logger = LoggerFactory.create(__name__)
 
@@ -96,5 +96,5 @@ def main():
     app_setting, group_setting = load_setting_json(args.graph_file)
     graph_filename = args.graph_file
 
-    dpg = Networkx2DearPyGui(app_setting, group_setting)
+    dpg = GraphView(app_setting, group_setting)
     dpg.start(graph_filename, app_setting['window_size'][0], app_setting['window_size'][1])

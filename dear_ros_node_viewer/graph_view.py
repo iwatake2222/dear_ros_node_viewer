@@ -21,7 +21,7 @@ from dear_ros_node_viewer.graph_viewmodel import GraphViewModel
 logger = LoggerFactory.create(__name__)
 
 
-class Networkx2DearPyGui:
+class GraphView:
     """Class to display node graph"""
     # Color definitions
     COLOR_NODE_SELECTED = [0, 0, 64]
@@ -362,6 +362,6 @@ if __name__ == '__main__':
         app_setting = {
             "font": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf"
         }
-        Networkx2DearPyGui(app_setting, graph)
+        GraphView(app_setting, graph)
 
     local_main()
