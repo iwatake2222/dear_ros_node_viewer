@@ -2,12 +2,9 @@ pytest
 pytest-cov
 pylint
 
-numpy
+dearpygui>=1.10.1
 matplotlib
-pydot
 networkx
-dearpygui
-graphviz
-pygraphviz
+numpy
+pydot
 pyyaml
-

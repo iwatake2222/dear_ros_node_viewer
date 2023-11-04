@@ -1,2 +1,4 @@
 [MAIN]
 disable=too-many-public-methods
+indent-string='  '
+indent-after-paren=2

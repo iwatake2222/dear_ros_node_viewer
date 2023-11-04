@@ -1,0 +1,71 @@
+[project]
+name = "dear_ros_node_viewer"
+# version = "0.0.0"
+dynamic = ["version"]
+description = "dear_ros_node_viewer"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE.txt"}
+keywords = ["ros", "ros2", "tool", "rqt_graph", "dearpygui", "node-editor"]
+
+authors = [
+  {name = "iwatake2222", email = "take.iwiw2222@gmail.com" }
+]
+
+maintainers = [
+  {name = "iwatake2222", email = "take.iwiw2222@gmail.com" }
+]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+
+  "Intended Audience :: Developers",
+
+  "Topic :: Utilities",
+  "Topic :: Scientific/Engineering :: Visualization",
+  "Framework :: Robot Framework :: Tool",
+
+  "License :: OSI Approved :: Apache Software License",
+
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = [
+  "dearpygui>=1.10.1",
+  "matplotlib",
+  "networkx",
+  "numpy",
+  "pydot",
+  "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["check-manifest"]
+test = ["coverage"]
+
+[project.urls]
+"Homepage" = "https://github.com/iwatake2222/dear_ros_node_viewer"
+"Bug Reports" = "https://github.com/iwatake2222/dear_ros_node_viewer/issues"
+"Source" = "https://github.com/iwatake2222/dear_ros_node_viewer"
+
+[project.scripts]
+dear_ros_node_viewer = "dear_ros_node_viewer.__main__:main"
+
+[tool.setuptools]
+package-data = {"dear_ros_node_viewer" = ["setting.json", "font/*/*.ttf"]}
+
+[build-system]
+requires = ["setuptools>=64", "wheel", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_file = "src/dear_ros_node_viewer/_version.py"
+# version_scheme= "no-guess-dev"
+local_scheme = "no-local-version"
+fallback_version = "0.0.0"

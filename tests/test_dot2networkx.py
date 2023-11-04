@@ -1,4 +1,4 @@
-# Copyright 2022 Tier IV, Inc.
+# Copyright 2023 iwatake2222
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 Test dot2networkx module
 """
 
-from dear_ros_node_viewer.dot2networkx import dot2networkx
+from src.dear_ros_node_viewer.dot2networkx import dot2networkx
 
 
 def test_dot2networkx():

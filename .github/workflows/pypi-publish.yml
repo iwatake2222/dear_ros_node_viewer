@@ -21,10 +21,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel pipenv
+        pip install setuptools wheel pipenv build setuptools_scm
     - name: Build
       run: |
-        python setup.py sdist bdist_wheel
+        python3 -m build
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
