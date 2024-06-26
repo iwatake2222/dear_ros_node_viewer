@@ -115,13 +115,30 @@ def create_callback_group_list(node, dict_cbgroup2executor, dict_cbgroup2color):
     callback_names = callback_group['callback_names']
     callback_group_info['callback_group_name'] = callback_group_name
     callback_group_info['callback_group_type'] = callback_group_type
-    callback_group_info['executor_name'] = dict_cbgroup2executor[callback_group_name]
-    callback_group_info['color'] = dict_cbgroup2color[callback_group_name]
+    if callback_group_name in dict_cbgroup2executor:
+      callback_group_info['executor_name'] = dict_cbgroup2executor[callback_group_name]
+      callback_group_info['color'] = dict_cbgroup2color[callback_group_name]
+    else:
+      is_display_none_excutor = False
+      if is_display_none_excutor:
+        callback_group_info['executor_name'] = 'None'
+        callback_group_info['color'] = [255, 255, 255]
+      else:
+        continue
     callback_group_info['callback_detail_list'] = []
     for callback_name in callback_names:
       callback_detail = create_callback_detail(callbacks, callback_name)
       if callback_detail:
-        callback_group_info['callback_detail_list'].append(callback_detail)
+        max_callback_detail_list = 50
+        if len(callback_group_info['callback_detail_list']) < max_callback_detail_list:
+          callback_group_info['callback_detail_list'].append(callback_detail)
+        elif len(callback_group_info['callback_detail_list']) == max_callback_detail_list:
+          logger.warning(f'Too many callbacks exist in {node["node_name"]}. The following callback is ignored. {callback_detail}')
+          callback_detail = {
+            'callback_name': 'Too many callbacks',
+            'callback_type': '',
+            'description': 'Too many callbacks'}
+          callback_group_info['callback_detail_list'].append(callback_detail)
     callback_group_list.append(callback_group_info)
   return callback_group_list
 
