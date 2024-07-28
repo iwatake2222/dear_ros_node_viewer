@@ -40,9 +40,14 @@
       "offset": [3.0, -0.8, 3.0, 1.5],
       "color": [196, 64, 0]
     },
-    "__others__": {
+    "/system": {
       "direction": "horizontal",
       "offset": [-0.5, -0.5, 1.0, 1.0],
+      "color": [64, 64, 128]
+    },
+    "__others__": {
+      "direction": "horizontal",
+      "offset": [0.5, -0.5, 1.0, 1.0],
       "color": [16, 64, 96]
     }
   }
