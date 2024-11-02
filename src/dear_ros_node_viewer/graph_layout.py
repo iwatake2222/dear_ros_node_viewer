@@ -94,7 +94,7 @@ def place_node(graph: nx.classes.digraph.DiGraph, group_name: str, prog: str = '
     Dictionary of normalized positions keyed by node.
   """
 
-  graph_modified = nx.DiGraph()
+  graph_modified = nx.MultiDiGraph()
   for node_name in graph.nodes:
     if group_name in node_name:
       graph_modified.add_node(node_name)

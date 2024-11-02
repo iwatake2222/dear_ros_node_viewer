@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: "3.13"
     - name: Install dependencies
       run: |
         sudo apt update
@@ -40,7 +40,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Lint with pylint
       run: |
-        pylint ./src/dear_ros_node_viewer --disable=E0401
+        pylint ./src/dear_ros_node_viewer --disable=E0401,W1203,C0301
     - name: Test with pytest
       run: |
         pytest --doctest-modules -v --cov=./src/dear_ros_node_viewer

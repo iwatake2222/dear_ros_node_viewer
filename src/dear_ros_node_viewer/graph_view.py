@@ -367,7 +367,7 @@ class GraphView:
 if __name__ == '__main__':
   def local_main():
     """main function for this file"""
-    graph = nx.DiGraph()
+    graph = nx.MultiDiGraph()
     nx.add_path(graph, ['3', '5', '4', '1', '0', '2'])
     nx.add_path(graph, ['3', '0', '4', '2', '1', '5'])
     layout = nx.spring_layout(graph)

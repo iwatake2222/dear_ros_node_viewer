@@ -33,7 +33,7 @@ class GraphManager:
     self.app_setting = app_setting
     self.group_setting = group_setting
     self.dir = './'
-    self.graph: nx.DiGraph = nx.DiGraph()
+    self.graph: nx.DiGraph = nx.MultiDiGraph()
     self.caret_path_dict: dict = {}
 
   def load_graph_from_caret(self, filename: str, target_path: str = 'all_graph'):

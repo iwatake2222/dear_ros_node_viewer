@@ -20,7 +20,7 @@ from src.dear_ros_node_viewer.graph_layout import place_node_by_group, align_lay
 
 
 def test_graph_layout():
-    graph = nx.DiGraph()
+    graph = nx.MultiDiGraph()
     nx.add_path(graph, ['"/3"', '"/5"', '"/4"', '"/1"', '"/0"', '"/2"'])
 
     group_setting = {
