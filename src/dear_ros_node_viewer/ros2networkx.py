@@ -60,16 +60,19 @@ class Ros2Networkx():
     time.sleep(5)
     graph = Graph(self.node_)
     graph.set_node_stale(5.0)
+    logger.info('graph.update start')
     graph.update()
+    logger.info('graph.update done')
 
     dotcode_generator = RosGraphDotcodeGenerator(self.node_)
+    logger.info('generate_dotcode start')
     dotcode = dotcode_generator.generate_dotcode(
           rosgraphinst=graph,
-          ns_filter='',
+          ns_filter='-/rosbag2_recorder',
           topic_filter='',
           # graph_mode='node_topic',
           graph_mode='node_node',
-          hide_single_connection_topics=True,
+          hide_single_connection_topics=False,
           hide_dead_end_topics=True,
           cluster_namespaces_level=0,
           # accumulate_actions=accumulate_actions,
@@ -77,11 +80,10 @@ class Ros2Networkx():
           # orientation=orientation,
           quiet=True,
           unreachable=True,
-          group_tf_nodes=True,
           hide_tf_nodes=True,
-          # group_image_nodes=group_image_nodes,
           hide_dynamic_reconfigure=True
           )
+    logger.info('generate_dotcode done')
 
     if filename:
       with open(filename, encoding='UTF8', mode='w') as dot_file:

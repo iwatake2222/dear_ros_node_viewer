@@ -5,7 +5,8 @@
     "ignore_unconnected_nodes": true,
     "ignore_node_list": [
       "/node_name/to_be_ignored/in_regularexpression",
-      "/wild_card/is/.*"
+      "/wild_card/is/.*",
+      "/rosbag2_recorder"
     ],
     "ignore_topic_list": [
       "/topic_name/to_be_ignored/in_regularexpression",
