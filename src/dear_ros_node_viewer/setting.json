@@ -5,7 +5,8 @@
     "ignore_unconnected_nodes": true,
     "ignore_node_list": [
       "/node_name/to_be_ignored/in_regularexpression",
-      "/wild_card/is/.*"
+      "/wild_card/is/.*",
+      "/rosbag2_recorder"
     ],
     "ignore_topic_list": [
       "/topic_name/to_be_ignored/in_regularexpression",
@@ -17,37 +18,52 @@
   "group_setting": {
     "/sensing": {
       "direction": "horizontal",
-      "offset": [0.0, 1.0, 2.5, 2.0],
+      "offset": [0.0, 0.0, 2.5, 2.0],
       "color": [128, 0, 128]
     },
     "/localization": {
       "direction": "horizontal",
-      "offset": [0.0, 3.5, 2.5, 2.0],
+      "offset": [0.0, 2.5, 2.5, 2.0],
+      "color": [0, 0, 128]
+    },
+    "/map": {
+      "direction": "horizontal",
+      "offset": [0.0, 4.5, 1.0, 1.0],
       "color": [0, 0, 128]
     },
     "/perception": {
       "direction": "horizontal",
-      "offset": [3.0, 3.5, 4.0, 4.0],
+      "offset": [3.0, 0.0, 7.0, 3.0],
       "color": [0, 128, 0]
     },
     "/planning": {
       "direction": "horizontal",
-      "offset": [7.0, 0.0, 4.0, 4.0],
+      "offset": [3.0, 3.0, 4.0, 2.0],
       "color": [128, 128, 0]
     },
     "/control": {
       "direction": "horizontal",
-      "offset": [3.0, -0.8, 3.0, 1.5],
+      "offset": [8.0, 3.0, 3.0, 1.5],
       "color": [196, 64, 0]
     },
     "/system": {
       "direction": "horizontal",
-      "offset": [-0.5, -0.5, 1.0, 1.0],
+      "offset": [7.0, 6.0, 1.0, 5.0],
       "color": [64, 64, 128]
+    },
+    "/adapi": {
+      "direction": "horizontal",
+      "offset": [8.0, 6.0, 1.0, 5.0],
+      "color": [0, 64, 64]
+    },
+    "/default_ad_api": {
+      "direction": "horizontal",
+      "offset": [9.0, 6.0, 1.0, 2.0],
+      "color": [0, 64, 64]
     },
     "__others__": {
       "direction": "horizontal",
-      "offset": [0.5, -0.5, 1.0, 1.0],
+      "offset": [11.0, 6.0, 2.0, 5.0],
       "color": [16, 64, 96]
     }
   }

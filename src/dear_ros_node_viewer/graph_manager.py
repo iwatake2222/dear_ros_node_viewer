@@ -84,6 +84,11 @@ class GraphManager:
     self.graph.remove_nodes_from(remove_node_list)
     logger.info('%s nodes are removed by filter', len(remove_node_list))
 
+    if self.app_setting['ignore_unconnected_nodes']:
+      isolated_node_list = list(nx.isolates(self.graph))
+      logger.info('%s nodes are removed due to isolated', len(isolated_node_list))
+      self.graph.remove_nodes_from(isolated_node_list)
+
   def filter_topic(self):
     """Remove topics which match filter setting"""
     remove_edge_list = []
@@ -96,11 +101,6 @@ class GraphManager:
           break
     self.graph.remove_edges_from(remove_edge_list)
     logger.info('%s topics are removed by filter', len(remove_edge_list))
-
-    if self.app_setting['ignore_unconnected_nodes']:
-      isolated_node_list = list(nx.isolates(self.graph))
-      logger.info('%s nodes are removed due to isolated', len(isolated_node_list))
-      self.graph.remove_nodes_from(isolated_node_list)
 
   def clear_caret_path_dict(self):
     """ Clear CARET path dict """

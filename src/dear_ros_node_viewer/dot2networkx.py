@@ -37,6 +37,8 @@ def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph,
       graph.add_node(label)
 
   for edge in graph_org.edges:
+    if 'label' not in graph_org.nodes[edge[0]] or 'label' not in graph_org.nodes[edge[1]] or 'label' not in graph_org.edges[edge]:
+      continue
     node_pub = graph_org.nodes[edge[0]]['label']
     node_sub = graph_org.nodes[edge[1]]['label']
     label = graph_org.edges[edge]['label']
