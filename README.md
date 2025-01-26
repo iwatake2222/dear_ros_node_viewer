@@ -19,6 +19,7 @@ https://user-images.githubusercontent.com/105265012/177068238-eaf4fed9-12c0-4c5b
 - Ubuntu 20.04 or 22.04
   - graphviz is required
 - optional: ROS 2 Galactic or Humble if you need runtime ROS graph analysis
+  - e.g., `sudo apt install ros-humble-rqt-graph` , `sudo apt install ros-humble-desktop`
 - Not tested in Windows / Mac
 
 ## Get Started
