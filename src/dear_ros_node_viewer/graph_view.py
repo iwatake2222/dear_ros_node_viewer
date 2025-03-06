@@ -283,11 +283,11 @@ class GraphView:
 
   def _cb_key_press(self, sender, app_data):
     """callback function for key press"""
-    if app_data == ord('S'):
+    if app_data == dpg.mvKey_S:
       self._cb_menu_layout_save()
-    elif app_data == ord('L'):
+    elif app_data == dpg.mvKey_L:
       self._cb_menu_layout_load()
-    elif app_data == ord('C'):
+    elif app_data == dpg.mvKey_C:
       self._cb_menu_copy()
 
   def _cb_menu_layout_reset(self):
