@@ -70,7 +70,7 @@ class GraphManager:
     self.filter_node()
     if len(self.graph.nodes):
       self.graph = place_node_by_group(self.graph, self.group_setting)
-      self.graph = align_layout(self.graph)
+      # self.graph = align_layout(self.graph)
 
   def filter_node(self):
     """Remove nodes which match filter setting"""

@@ -33,7 +33,7 @@ def get_font_path(font_name: str) -> str:
   return font_name
 
 
-def load_setting_json(graph_file, disable_ignore_filter):
+def load_setting_json(graph_file, disable_ignore_filter, displace_new_node):
   """
   Load JSON setting file
   Set default values if the file doesn't exist
@@ -75,6 +75,12 @@ def load_setting_json(graph_file, disable_ignore_filter):
     if 'ignore_topic_list' in app_setting:
       app_setting['ignore_topic_list'] = []
 
+  if displace_new_node:
+    for group, setting in group_setting.items():
+      group_setting[group]["offset"][0] = setting["offset"][0] - 20
+      group_setting[group]["offset"][1] = setting["offset"][1] - 20
+
+
   return app_setting, group_setting
 
 
@@ -87,10 +93,12 @@ def parse_args():
     help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
         default=architecture.yaml')
   parser.add_argument('--disable_ignore_filter', action="store_true")
+  parser.add_argument('--displace_new_node', action="store_true")
   args = parser.parse_args()
 
   logger.debug(f'args.graph_file = {args.graph_file}')
   logger.debug(f'args.disable_ignore_filter = {args.disable_ignore_filter}')
+  logger.debug(f'args.displace_new_node = {args.displace_new_node}')
 
   return args
 
@@ -101,7 +109,7 @@ def main():
   """
   args = parse_args()
 
-  app_setting, group_setting = load_setting_json(args.graph_file, args.disable_ignore_filter)
+  app_setting, group_setting = load_setting_json(args.graph_file, args.disable_ignore_filter, args.displace_new_node)
   graph_filename = args.graph_file
 
   dpg = GraphView(app_setting, group_setting)
