@@ -42,7 +42,7 @@ class GraphView:
     self.dpg_id_editor: int = -1
     self.dpg_id_caret_path: int = -1
 
-  def start(self, graph_filename: str, window_width: int = 1920, window_height: int = 1080):
+  def start(self, graph_filename: str, display_cb_detail: bool, window_width: int = 1920, window_height: int = 1080):
     """ Start Dear PyGui context """
     dpg.create_context()
     dpg.create_viewport(
@@ -63,7 +63,7 @@ class GraphView:
       self.add_menu_in_dpg()
 
     self.graph_viewmodel.load_graph(graph_filename)
-    self.update_node_editor()
+    self.update_node_editor(display_cb_detail)
 
     # Update node position and font according to the default graph size and font size
     self._cb_wheel(0, 0)
@@ -74,7 +74,7 @@ class GraphView:
     dpg.start_dearpygui()
     dpg.destroy_context()
 
-  def update_node_editor(self):
+  def update_node_editor(self, display_cb_detail: bool=False):
     """Update node editor"""
     if self.dpg_id_editor != -1:
       dpg.delete_item(self.dpg_id_editor)
@@ -83,7 +83,7 @@ class GraphView:
       with dpg.node_editor(
           menubar=False, minimap=True,
           minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_editor:
-        self.add_node_in_dpg()
+        self.add_node_in_dpg(display_cb_detail)
         self.add_link_in_dpg()
     self.graph_viewmodel.load_layout()
 
@@ -102,10 +102,6 @@ class GraphView:
 
       dpg.add_menu_item(label="Copy", callback=self._cb_menu_copy, shortcut='(c)')
 
-      with dpg.menu(label="ROS"):
-        dpg.add_menu_item(label="Load Current Gaph",
-                  callback=self._cb_menu_graph_current)
-
       with dpg.menu(label="Font"):
         dpg.add_slider_int(label="Font Size",
                    default_value=self.font_size, min_value=8, max_value=40,
@@ -122,11 +118,15 @@ class GraphView:
         dpg.add_menu_item(label="Last Only", callback=self._cb_menu_edgename_last)
 
       with dpg.menu(label="CARET"):
-        dpg.add_menu_item(label="Show Callback", callback=self._cb_menu_caret_callbackbroup)
+        dpg.add_menu_item(label="Show Callback Group", callback=self._cb_menu_caret_callbackbroup)
         with dpg.menu(label="PATH") as self.dpg_id_caret_path:
           pass
 
-  def add_node_in_dpg(self):
+      with dpg.menu(label="ROS"):
+        dpg.add_menu_item(label="Load Current Gaph",
+                  callback=self._cb_menu_graph_current)
+
+  def add_node_in_dpg(self, display_cb_detail: bool):
     """ Add nodes and attributes """
     graph = self.graph_viewmodel.get_graph()
     for node_name in graph.nodes:
@@ -168,12 +168,12 @@ class GraphView:
           dpg.bind_item_handler_registry(node_id, node_select_handler)
 
         # Add text for node I/O(topics)
-        self.add_node_attr_in_dpg(node_name)
+        self.add_node_attr_in_dpg(node_name, display_cb_detail)
 
     self.graph_viewmodel.update_nodename(GraphViewModel.OmitType.LAST)
     self.graph_viewmodel.update_edgename(GraphViewModel.OmitType.LAST)
 
-  def add_node_attr_in_dpg(self, node_name):
+  def add_node_attr_in_dpg(self, node_name, display_cb_detail: bool):
     """ Add attributes in node """
     graph = self.graph_viewmodel.get_graph()
     edge_list_pub = []
@@ -201,11 +201,11 @@ class GraphView:
                                attr_id, text_id)
 
     # Add text for executor/callbackgroups
-    self.add_node_callbackgroup_in_dpg(node_name)
+    self.add_node_callbackgroup_in_dpg(node_name, display_cb_detail)
     # Hide by default
     self.graph_viewmodel.display_callbackgroup(False)
 
-  def add_node_callbackgroup_in_dpg(self, node_name):
+  def add_node_callbackgroup_in_dpg(self, node_name, display_cb_detail: bool):
     """ Add callback group information """
     graph = self.graph_viewmodel.get_graph()
     if 'callback_group_list' in graph.nodes[node_name]:
@@ -220,14 +220,15 @@ class GraphView:
         color = callback_group['color']
         with dpg.node_attribute() as attr_id:
           dpg.add_text('=== Callback Group [' + executor_name + '] ===', color=color)
-          for callback_detail in callback_detail_list:
-            # callback_name = callback_detail['callback_name']
-            callback_type = callback_detail['callback_type']
-            description = callback_detail['description']
-            description = self.graph_viewmodel.omit_name(
-              description, GraphViewModel.OmitType.LAST)
-            dpg.add_text(default_value='cb_' + callback_type + ': ' + description,
-                   color=color)
+          if display_cb_detail:
+            for callback_detail in callback_detail_list:
+              # callback_name = callback_detail['callback_name']
+              callback_type = callback_detail['callback_type']
+              description = callback_detail['description']
+              description = self.graph_viewmodel.omit_name(
+                description, GraphViewModel.OmitType.LAST)
+              dpg.add_text(default_value='cb_' + callback_type + ': ' + description,
+                    color=color)
           self.graph_viewmodel.add_dpg_callbackgroup_id(
             callback_group['callback_group_name'], attr_id)
 
@@ -342,12 +343,12 @@ class GraphView:
 
   def _cb_menu_caret_callbackbroup(self, sender, app_data, user_data):
     """ Show callback group info """
-    if dpg.get_item_label(sender) == 'Show Callback':
+    if dpg.get_item_label(sender) == 'Show Callback Group':
       self.graph_viewmodel.display_callbackgroup(True)
-      dpg.set_item_label(sender, 'Hide Callback')
+      dpg.set_item_label(sender, 'Hide Callback Group')
     else:
       self.graph_viewmodel.display_callbackgroup(False)
-      dpg.set_item_label(sender, 'Show Callback')
+      dpg.set_item_label(sender, 'Show Callback Group')
 
   def _cb_menu_caret_path(self, sender, app_data, user_data):
     """ High light selected CARET path """

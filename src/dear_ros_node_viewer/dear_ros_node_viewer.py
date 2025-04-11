@@ -94,11 +94,13 @@ def parse_args():
         default=architecture.yaml')
   parser.add_argument('--disable_ignore_filter', action="store_true")
   parser.add_argument('--displace_new_node', action="store_true")
+  parser.add_argument('--display_callback_detail', action="store_true")
   args = parser.parse_args()
 
   logger.debug(f'args.graph_file = {args.graph_file}')
   logger.debug(f'args.disable_ignore_filter = {args.disable_ignore_filter}')
   logger.debug(f'args.displace_new_node = {args.displace_new_node}')
+  logger.debug(f'args.display_callback_detail = {args.display_callback_detail}')
 
   return args
 
@@ -113,4 +115,4 @@ def main():
   graph_filename = args.graph_file
 
   dpg = GraphView(app_setting, group_setting)
-  dpg.start(graph_filename, app_setting['window_size'][0], app_setting['window_size'][1])
+  dpg.start(graph_filename, args.display_callback_detail, app_setting['window_size'][0], app_setting['window_size'][1])

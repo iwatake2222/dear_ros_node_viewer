@@ -22,7 +22,7 @@ from .caret_extend_callback_group import extend_callback_group
 from .caret_extend_path import get_path_dict
 from .dot2networkx import dot2networkx
 from .ros2networkx import Ros2Networkx
-from .graph_layout import place_node_by_group, align_layout
+from .graph_layout import place_node_by_group
 
 logger = LoggerFactory.create(__name__)
 
