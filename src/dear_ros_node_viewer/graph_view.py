@@ -74,7 +74,7 @@ class GraphView:
     dpg.start_dearpygui()
     dpg.destroy_context()
 
-  def update_node_editor(self, display_cb_detail: bool):
+  def update_node_editor(self, display_cb_detail: bool=False):
     """Update node editor"""
     if self.dpg_id_editor != -1:
       dpg.delete_item(self.dpg_id_editor)
@@ -102,10 +102,6 @@ class GraphView:
 
       dpg.add_menu_item(label="Copy", callback=self._cb_menu_copy, shortcut='(c)')
 
-      with dpg.menu(label="ROS"):
-        dpg.add_menu_item(label="Load Current Gaph",
-                  callback=self._cb_menu_graph_current)
-
       with dpg.menu(label="Font"):
         dpg.add_slider_int(label="Font Size",
                    default_value=self.font_size, min_value=8, max_value=40,
@@ -125,6 +121,10 @@ class GraphView:
         dpg.add_menu_item(label="Show Callback Group", callback=self._cb_menu_caret_callbackbroup)
         with dpg.menu(label="PATH") as self.dpg_id_caret_path:
           pass
+
+      with dpg.menu(label="ROS"):
+        dpg.add_menu_item(label="Load Current Gaph",
+                  callback=self._cb_menu_graph_current)
 
   def add_node_in_dpg(self, display_cb_detail: bool):
     """ Add nodes and attributes """
