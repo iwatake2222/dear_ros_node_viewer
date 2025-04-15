@@ -200,6 +200,12 @@ class GraphView:
         self.graph_viewmodel.add_dpg_nodeedge_idtext(node_name, edge,
                                attr_id, text_id)
 
+    # Workaround for https://github.com/hoffstadt/DearPyGui/issues/2444
+    # Otherwise, Nodes with the first attribute "empty" expand infinitely in width
+    if not edge_list_pub and not edge_list_sub:
+      with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Output) :
+        dpg.add_text("")
+
     # Add text for executor/callbackgroups
     self.add_node_callbackgroup_in_dpg(node_name, display_cb_detail)
     # Hide by default
