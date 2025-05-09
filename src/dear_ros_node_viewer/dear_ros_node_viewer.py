@@ -116,11 +116,11 @@ def main():
     if 'ignore_topic_list' in app_setting:
       app_setting['ignore_topic_list'] = []
 
-  app_setting['display_unconnected_nodes'] = True if args.display_unconnected_nodes else False
-  app_setting['bg_white'] = True if args.bg_white else False
+  app_setting['display_unconnected_nodes'] = args.display_unconnected_nodes
+  app_setting['bg_white'] = args.bg_white
   if args.bg_white:
     # make component colors bright
-    for group, setting in group_setting.items():
+    for _, setting in group_setting.items():
       bright_bias = 150
       if setting['color'][0] >= 80 and setting['color'][1] >= 80:
         # For yello color

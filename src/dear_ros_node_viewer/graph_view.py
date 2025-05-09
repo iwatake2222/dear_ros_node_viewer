@@ -37,13 +37,13 @@ class GraphView:
     self.dpg_id_editor: int = -1
     self.dpg_id_caret_path: int = -1
 
-    self.COLOR_NODE_SELECTED = [0, 0, 64]
-    self.COLOR_NODE_BAR = [32, 32, 32]
-    self.COLOR_NODE_BACK = [64, 64, 64]
+    self.color_node_selected = [0, 0, 64]
+    self.color_node_bar = [32, 32, 32]
+    self.color_node_back = [64, 64, 64]
     if self.app_setting['bg_white']:
-      self.COLOR_NODE_SELECTED = [val + 180 for val in self.COLOR_NODE_SELECTED]
-      self.COLOR_NODE_BAR = [val + 180 for val in self.COLOR_NODE_BAR]
-      self.COLOR_NODE_BACK = [val + 180 for val in self.COLOR_NODE_BACK]
+      self.color_node_selected = [val + 180 for val in self.color_node_selected]
+      self.color_node_bar = [val + 180 for val in self.color_node_bar]
+      self.color_node_back = [val + 180 for val in self.color_node_back]
 
   def start(self, graph_filename: str, display_cb_detail: bool, window_width: int = 1920, window_height: int = 1080):
     """ Start Dear PyGui context """
@@ -77,7 +77,7 @@ class GraphView:
     dpg.start_dearpygui()
     dpg.destroy_context()
 
-  def update_node_editor(self, bg_white:bool, display_cb_detail: bool=False):
+  def update_node_editor(self, bg_white:bool=False, display_cb_detail: bool=False):
     """Update node editor"""
     if self.dpg_id_editor != -1:
       dpg.delete_item(self.dpg_id_editor)
@@ -162,15 +162,15 @@ class GraphView:
               dpg.mvNodeCol_TitleBar,
               graph.nodes[node_name]['color']
               if 'color' in graph.nodes[node_name]
-              else self.COLOR_NODE_BAR,
+              else self.color_node_bar,
               category=dpg.mvThemeCat_Nodes)
             dpg.add_theme_color(
               dpg.mvNodeCol_NodeBackgroundSelected,
-              self.COLOR_NODE_SELECTED,
+              self.color_node_selected,
               category=dpg.mvThemeCat_Nodes)
             theme_color = dpg.add_theme_color(
               dpg.mvNodeCol_NodeBackground,
-              self.COLOR_NODE_BACK,
+              self.color_node_back,
               category=dpg.mvThemeCat_Nodes)
             # Set color value
             self.graph_viewmodel.add_dpg_node_color(node_name, theme_color)

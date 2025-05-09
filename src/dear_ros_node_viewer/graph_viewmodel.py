@@ -39,19 +39,19 @@ class GraphViewModel:
     self.graph_size: list[int] = [1920, 1080]
     self.graph_manager = GraphManager(app_setting, group_setting)
     self.node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
-    self.COLOR_HIGHLIGHT_SELECTED = [0, 0, 64]
-    self.COLOR_HIGHLIGHT_PUB = [0, 64, 0]
-    self.COLOR_HIGHLIGHT_SUB = [64, 0, 0]
-    self.COLOR_HIGHLIGHT_CARET_PATH = [0, 96, 0]
-    self.COLOR_HIGHLIGHT_DEF = [64, 64, 64]
-    self.COLOR_HIGHLIGHT_EDGE = [196, 196, 196]
+    self.color_highlight_selected = [0, 0, 64]
+    self.color_highlight_pub = [0, 64, 0]
+    self.color_highlight_sub = [64, 0, 0]
+    self.color_highlight_caret_path = [0, 96, 0]
+    self.color_highlight_def = [64, 64, 64]
+    self.color_highlight_edge = [196, 196, 196]
     if app_setting['bg_white']:
-      self.COLOR_HIGHLIGHT_SELECTED = [val + 180 for val in self.COLOR_HIGHLIGHT_SELECTED]
-      self.COLOR_HIGHLIGHT_PUB = [val + 180 for val in self.COLOR_HIGHLIGHT_PUB]
-      self.COLOR_HIGHLIGHT_SUB = [val + 180 for val in self.COLOR_HIGHLIGHT_SUB]
-      self.COLOR_HIGHLIGHT_CARET_PATH = [val + 180 for val in self.COLOR_HIGHLIGHT_CARET_PATH]
-      self.COLOR_HIGHLIGHT_DEF = [val + 180 for val in self.COLOR_HIGHLIGHT_DEF]
-      self.COLOR_HIGHLIGHT_EDGE = [val - 180 for val in self.COLOR_HIGHLIGHT_EDGE]
+      self.color_highlight_selected = [val + 180 for val in self.color_highlight_selected]
+      self.color_highlight_pub = [val + 180 for val in self.color_highlight_pub]
+      self.color_highlight_sub = [val + 180 for val in self.color_highlight_sub]
+      self.color_highlight_caret_path = [val + 180 for val in self.color_highlight_caret_path]
+      self.color_highlight_def = [val + 180 for val in self.color_highlight_def]
+      self.color_highlight_edge = [val - 180 for val in self.color_highlight_edge]
 
     # bind list to components in PyGui
     self.dpg_bind = {
@@ -155,7 +155,7 @@ class GraphViewModel:
         self.node_selected_dict[node_name] = False
         dpg.set_value(
           self.dpg_bind['node_color'][node_name],
-          self.COLOR_HIGHLIGHT_DEF)
+          self.color_highlight_def)
         for edge_name in publishing_edge_list:
           dpg.set_value(
             self.dpg_bind['edge_color'][edge_name],
@@ -163,7 +163,7 @@ class GraphViewModel:
         for pub_node_name in publishing_edge_subscribing_node_name_list:
           dpg.set_value(
             self.dpg_bind['node_color'][pub_node_name],
-            self.COLOR_HIGHLIGHT_DEF)
+            self.color_highlight_def)
         for edge_name in subscribing_edge_list:
           dpg.set_value(
             self.dpg_bind['edge_color'][edge_name],
@@ -171,7 +171,7 @@ class GraphViewModel:
         for sub_node_name in subscribing_edge_publishing_node_name_list:
           dpg.set_value(
             self.dpg_bind['node_color'][sub_node_name],
-            self.COLOR_HIGHLIGHT_DEF)
+            self.color_highlight_def)
         break
 
     if not is_re_clicked:
@@ -185,23 +185,23 @@ class GraphViewModel:
       self.node_selected_dict[selected_node_name] = True
       dpg.set_value(
         self.dpg_bind['node_color'][selected_node_name],
-        self.COLOR_HIGHLIGHT_SELECTED)
+        self.color_highlight_selected)
       for edge_name in publishing_edge_list:
         dpg.set_value(
           self.dpg_bind['edge_color'][edge_name],
-          self.COLOR_HIGHLIGHT_EDGE)
+          self.color_highlight_edge)
       for pub_node_name in publishing_edge_subscribing_node_name_list:
         dpg.set_value(
           self.dpg_bind['node_color'][pub_node_name],
-          self.COLOR_HIGHLIGHT_PUB)
+          self.color_highlight_pub)
       for edge_name in subscribing_edge_list:
         dpg.set_value(
           self.dpg_bind['edge_color'][edge_name],
-          self.COLOR_HIGHLIGHT_EDGE)
+          self.color_highlight_edge)
       for sub_node_name in subscribing_edge_publishing_node_name_list:
         dpg.set_value(
           self.dpg_bind['node_color'][sub_node_name],
-          self.COLOR_HIGHLIGHT_SUB)
+          self.color_highlight_sub)
 
   def zoom_inout(self, is_zoom_in):
     """ Zoom in/out """
@@ -332,7 +332,7 @@ class GraphViewModel:
     for node_name in graph.nodes:
       dpg.set_value(
         self.dpg_bind['node_color'][node_name],
-        self.COLOR_HIGHLIGHT_DEF)
+        self.color_highlight_def)
 
     # Then, high light nodes in the path
     node_list = self.graph_manager.caret_path_dict[path_name]
@@ -340,6 +340,6 @@ class GraphViewModel:
       if node_name in self.dpg_bind['node_color']:
         dpg.set_value(
           self.dpg_bind['node_color'][node_name],
-          self.COLOR_HIGHLIGHT_CARET_PATH)
+          self.color_highlight_caret_path)
       else:
         logger.error('%s is not included in the current graph', node_name)
