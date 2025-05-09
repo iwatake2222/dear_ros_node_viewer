@@ -26,14 +26,14 @@ logger = LoggerFactory.create(__name__)
 
 
 def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph,
-              ignore_unconnected=True) -> nx.classes.digraph.DiGraph:
+              display_unconnected_nodes=False) -> nx.classes.digraph.DiGraph:
   """Create NetworkX Object from dot graph file (nodes only) by rqt_graph"""
   graph = nx.MultiDiGraph()
   for node_org in graph_org.nodes:
     if 'label' not in graph_org.nodes[node_org]:
       continue
     label = graph_org.nodes[node_org]['label']
-    if not ignore_unconnected:
+    if display_unconnected_nodes:
       graph.add_node(label)
 
   for edge in graph_org.edges:
@@ -82,7 +82,7 @@ def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph) -> nx.classes.
   return graph
 
 
-def dot2networkx(filename: str, ignore_unconnected=True) -> nx.classes.digraph.DiGraph:
+def dot2networkx(filename: str, display_unconnected_nodes=False) -> nx.classes.digraph.DiGraph:
   """Function to create NetworkX object from dot graph file (rosgraph.dot)"""
   graph_org = nx.MultiDiGraph(nx.nx_pydot.read_dot(filename))
 
@@ -94,7 +94,7 @@ def dot2networkx(filename: str, ignore_unconnected=True) -> nx.classes.digraph.D
         break
 
   if is_node_only:
-    graph = dot2networkx_nodeonly(graph_org, ignore_unconnected)
+    graph = dot2networkx_nodeonly(graph_org, display_unconnected_nodes)
   else:
     graph = dot2networkx_nodetopic(graph_org)
 

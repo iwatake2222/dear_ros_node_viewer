@@ -33,7 +33,7 @@ def get_font_path(font_name: str) -> str:
   return font_name
 
 
-def load_setting_json(graph_file, disable_ignore_filter, displace_new_node):
+def load_setting_json(graph_file, displace_new_node):
   """
   Load JSON setting file
   Set default values if the file doesn't exist
@@ -56,8 +56,7 @@ def load_setting_json(graph_file, disable_ignore_filter, displace_new_node):
     logger.info('Unable to find %s. Use fixed default setting', setting_file)
     app_setting = {
       "window_size": [1920, 1080],
-      "font": "font/roboto/Roboto-Medium.ttf",
-      "ignore_unconnected_nodes": True,
+      "font": "font/roboto/Roboto-Medium.ttf"
     }
     group_setting = {
       "__others__": {
@@ -68,12 +67,6 @@ def load_setting_json(graph_file, disable_ignore_filter, displace_new_node):
     }
 
   app_setting['font'] = get_font_path(app_setting['font'])
-
-  if disable_ignore_filter:
-    if 'ignore_node_list' in app_setting:
-      app_setting['ignore_node_list'] = []
-    if 'ignore_topic_list' in app_setting:
-      app_setting['ignore_topic_list'] = []
 
   if displace_new_node:
     for group, setting in group_setting.items():
@@ -92,15 +85,19 @@ def parse_args():
     'graph_file', type=str, nargs='?', default='architecture.yaml',
     help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
         default=architecture.yaml')
-  parser.add_argument('--disable_ignore_filter', action="store_true")
-  parser.add_argument('--displace_new_node', action="store_true")
   parser.add_argument('--display_callback_detail', action="store_true")
+  parser.add_argument('--disable_ignore_filter', action="store_true")
+  parser.add_argument('--display_unconnected_nodes', action="store_true")
+  parser.add_argument('--displace_new_node', action="store_true")
+  parser.add_argument('--bg_white', action="store_true", help='Use white background')
   args = parser.parse_args()
 
   logger.debug(f'args.graph_file = {args.graph_file}')
-  logger.debug(f'args.disable_ignore_filter = {args.disable_ignore_filter}')
-  logger.debug(f'args.displace_new_node = {args.displace_new_node}')
   logger.debug(f'args.display_callback_detail = {args.display_callback_detail}')
+  logger.debug(f'args.disable_ignore_filter = {args.disable_ignore_filter}')
+  logger.debug(f'args.display_unconnected_nodes = {args.display_unconnected_nodes}')
+  logger.debug(f'args.displace_new_node = {args.displace_new_node}')
+  logger.debug(f'args.bg_white = {args.bg_white}')
 
   return args
 
@@ -111,7 +108,25 @@ def main():
   """
   args = parse_args()
 
-  app_setting, group_setting = load_setting_json(args.graph_file, args.disable_ignore_filter, args.displace_new_node)
+  app_setting, group_setting = load_setting_json(args.graph_file, args.displace_new_node)
+
+  if args.disable_ignore_filter:
+    if 'ignore_node_list' in app_setting:
+      app_setting['ignore_node_list'] = []
+    if 'ignore_topic_list' in app_setting:
+      app_setting['ignore_topic_list'] = []
+
+  app_setting['display_unconnected_nodes'] = args.display_unconnected_nodes
+  app_setting['bg_white'] = args.bg_white
+  if args.bg_white:
+    # make component colors bright
+    for _, setting in group_setting.items():
+      bright_bias = 150
+      if setting['color'][0] >= 80 and setting['color'][1] >= 80:
+        # For yello color
+        bright_bias = 80
+      setting['color'] = [val + bright_bias for val in setting['color']]
+
   graph_filename = args.graph_file
 
   dpg = GraphView(app_setting, group_setting)
