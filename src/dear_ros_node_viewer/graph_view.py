@@ -23,11 +23,6 @@ logger = LoggerFactory.create(__name__)
 
 class GraphView:
   """Class to display node graph"""
-  # Color definitions
-  COLOR_NODE_SELECTED = [0, 0, 64]
-  COLOR_NODE_BAR = [32, 32, 32]
-  COLOR_NODE_BACK = [64, 64, 64]
-
   def __init__(
       self,
       app_setting: dict,
@@ -41,6 +36,14 @@ class GraphView:
     self.dpg_window_id: int = -1
     self.dpg_id_editor: int = -1
     self.dpg_id_caret_path: int = -1
+
+    self.COLOR_NODE_SELECTED = [0, 0, 64]
+    self.COLOR_NODE_BAR = [32, 32, 32]
+    self.COLOR_NODE_BACK = [64, 64, 64]
+    if self.app_setting['bg_white']:
+      self.COLOR_NODE_SELECTED = [val + 180 for val in self.COLOR_NODE_SELECTED]
+      self.COLOR_NODE_BAR = [val + 180 for val in self.COLOR_NODE_BAR]
+      self.COLOR_NODE_BACK = [val + 180 for val in self.COLOR_NODE_BACK]
 
   def start(self, graph_filename: str, display_cb_detail: bool, window_width: int = 1920, window_height: int = 1080):
     """ Start Dear PyGui context """
@@ -63,7 +66,7 @@ class GraphView:
       self.add_menu_in_dpg()
 
     self.graph_viewmodel.load_graph(graph_filename)
-    self.update_node_editor(display_cb_detail)
+    self.update_node_editor(self.app_setting['bg_white'], display_cb_detail)
 
     # Update node position and font according to the default graph size and font size
     self._cb_wheel(0, 0)
@@ -74,7 +77,7 @@ class GraphView:
     dpg.start_dearpygui()
     dpg.destroy_context()
 
-  def update_node_editor(self, display_cb_detail: bool=False):
+  def update_node_editor(self, bg_white:bool, display_cb_detail: bool=False):
     """Update node editor"""
     if self.dpg_id_editor != -1:
       dpg.delete_item(self.dpg_id_editor)
@@ -85,6 +88,17 @@ class GraphView:
           minimap_location=dpg.mvNodeMiniMap_Location_BottomLeft) as self.dpg_id_editor:
         self.add_node_in_dpg(display_cb_detail)
         self.add_link_in_dpg()
+
+    if bg_white:
+      with dpg.theme() as ne_white_theme:
+        # with dpg.theme_component(dpg.mvNodeEditor):
+        with dpg.theme_component(dpg.mvAll):
+          dpg.add_theme_color(dpg.mvNodeCol_GridBackground, (255, 255, 255), category=dpg.mvThemeCat_Nodes)
+          dpg.add_theme_color(dpg.mvNodeCol_GridLine, (255, 255, 255), category=dpg.mvThemeCat_Nodes)
+          dpg.add_theme_color(dpg.mvNodeCol_NodeBackground, (0, 0, 0), category=dpg.mvThemeCol_Text)
+      # dpg.bind_item_theme(self.dpg_id_editor, ne_white_theme)
+      dpg.bind_theme(ne_white_theme)
+
     self.graph_viewmodel.load_layout()
 
     # Add CARET path

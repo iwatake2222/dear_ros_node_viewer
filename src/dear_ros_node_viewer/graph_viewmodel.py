@@ -27,14 +27,6 @@ logger = LoggerFactory.create(__name__)
 
 class GraphViewModel:
   """Class to bind graph and GUI components"""
-  # Color definitions
-  COLOR_HIGHLIGHT_SELECTED = [0, 0, 64]
-  COLOR_HIGHLIGHT_PUB = [0, 64, 0]
-  COLOR_HIGHLIGHT_SUB = [64, 0, 0]
-  COLOR_HIGHLIGHT_CARET_PATH = [0, 96, 0]
-  COLOR_HIGHLIGHT_DEF = [64, 64, 64]
-  COLOR_HIGHLIGHT_EDGE = [196, 196, 196]
-
   class OmitType(Enum):
     """Name omission type"""
     FULL = 1
@@ -47,6 +39,19 @@ class GraphViewModel:
     self.graph_size: list[int] = [1920, 1080]
     self.graph_manager = GraphManager(app_setting, group_setting)
     self.node_selected_dict: dict[str, bool] = {}    # [node_name, is_selected]
+    self.COLOR_HIGHLIGHT_SELECTED = [0, 0, 64]
+    self.COLOR_HIGHLIGHT_PUB = [0, 64, 0]
+    self.COLOR_HIGHLIGHT_SUB = [64, 0, 0]
+    self.COLOR_HIGHLIGHT_CARET_PATH = [0, 96, 0]
+    self.COLOR_HIGHLIGHT_DEF = [64, 64, 64]
+    self.COLOR_HIGHLIGHT_EDGE = [196, 196, 196]
+    if app_setting['bg_white']:
+      self.COLOR_HIGHLIGHT_SELECTED = [val + 180 for val in self.COLOR_HIGHLIGHT_SELECTED]
+      self.COLOR_HIGHLIGHT_PUB = [val + 180 for val in self.COLOR_HIGHLIGHT_PUB]
+      self.COLOR_HIGHLIGHT_SUB = [val + 180 for val in self.COLOR_HIGHLIGHT_SUB]
+      self.COLOR_HIGHLIGHT_CARET_PATH = [val + 180 for val in self.COLOR_HIGHLIGHT_CARET_PATH]
+      self.COLOR_HIGHLIGHT_DEF = [val + 180 for val in self.COLOR_HIGHLIGHT_DEF]
+      self.COLOR_HIGHLIGHT_EDGE = [val - 180 for val in self.COLOR_HIGHLIGHT_EDGE]
 
     # bind list to components in PyGui
     self.dpg_bind = {
