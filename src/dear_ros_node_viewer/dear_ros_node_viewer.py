@@ -16,13 +16,23 @@ Main function for Dear ROS Node Viewer
 """
 
 from __future__ import annotations
+from distutils.util import strtobool
+from datetime import datetime
 import os
 import argparse
 import json
 from .logger_factory import LoggerFactory
 from .graph_view import GraphView
+from .ros2networkx import Ros2Networkx
 
 logger = LoggerFactory.create(__name__)
+
+
+def save_ros2dot():
+  now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+  ros2networkx = Ros2Networkx()
+  ros2networkx.save_graph(f'./ros2_graph_{now_str}.dot')
+  ros2networkx.shutdown()
 
 
 def get_font_path(font_name: str) -> str:
@@ -85,11 +95,12 @@ def parse_args():
     'graph_file', type=str, nargs='?', default='architecture.yaml',
     help='Graph file path. e.g. architecture.yaml(CARET) or rosgraph.dot(rqt_graph).\
         default=architecture.yaml')
-  parser.add_argument('--display_callback_detail', action="store_true")
-  parser.add_argument('--disable_ignore_filter', action="store_true")
-  parser.add_argument('--display_unconnected_nodes', action="store_true")
-  parser.add_argument('--displace_new_node', action="store_true")
-  parser.add_argument('--bg_white', action="store_true", help='Use white background')
+  parser.add_argument('--display_callback_detail', type=strtobool, default=True)
+  parser.add_argument('--disable_ignore_filter', type=strtobool, default=False)
+  parser.add_argument('--display_unconnected_nodes', type=strtobool, default=False)
+  parser.add_argument('--displace_new_node', type=strtobool, default=False)
+  parser.add_argument('--bg_white', type=strtobool, default=False, help='Use white background')
+  parser.add_argument('--save_only', type=strtobool, default=False)
   args = parser.parse_args()
 
   logger.debug(f'args.graph_file = {args.graph_file}')
@@ -98,6 +109,7 @@ def parse_args():
   logger.debug(f'args.display_unconnected_nodes = {args.display_unconnected_nodes}')
   logger.debug(f'args.displace_new_node = {args.displace_new_node}')
   logger.debug(f'args.bg_white = {args.bg_white}')
+  logger.debug(f'args.save_only = {args.save_only}')
 
   return args
 
@@ -107,6 +119,10 @@ def main():
   Main function for Dear ROS Node Viewer
   """
   args = parse_args()
+
+  if args.save_only:
+    save_ros2dot()
+    return
 
   app_setting, group_setting = load_setting_json(args.graph_file, args.displace_new_node)
 
