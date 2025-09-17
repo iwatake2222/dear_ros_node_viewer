@@ -16,19 +16,28 @@ Main function for Dear ROS Node Viewer
 """
 
 from __future__ import annotations
-from distutils.util import strtobool
 from datetime import datetime
-import os
 import argparse
 import json
+import os
 from .logger_factory import LoggerFactory
 from .graph_view import GraphView
 from .ros2networkx import Ros2Networkx
 
+
 logger = LoggerFactory.create(__name__)
 
 
+def strtobool(val: str) -> bool:
+  """my strtobool"""
+  val = val.lower()
+  if val in ("y", "yes", "t", "true", "on", "1"):
+    return True
+  return False
+
+
 def save_ros2dot():
+  """save dot file for the current ROS 2 graph"""
   now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
   filename = f'./ros2_graph_{now_str}.dot'
   ros2networkx = Ros2Networkx()
