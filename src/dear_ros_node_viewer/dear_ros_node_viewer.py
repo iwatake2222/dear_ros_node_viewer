@@ -30,9 +30,11 @@ logger = LoggerFactory.create(__name__)
 
 def save_ros2dot():
   now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+  filename = f'./ros2_graph_{now_str}.dot'
   ros2networkx = Ros2Networkx()
-  ros2networkx.save_graph(f'./ros2_graph_{now_str}.dot')
+  ros2networkx.save_graph(filename)
   ros2networkx.shutdown()
+  logger.info(f'save to {filename}')
 
 
 def get_font_path(font_name: str) -> str:
