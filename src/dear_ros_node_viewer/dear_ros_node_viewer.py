@@ -17,7 +17,6 @@ Main function for Dear ROS Node Viewer
 
 from __future__ import annotations
 from datetime import datetime
-from distutils.util import strtobool
 import argparse
 import json
 import os
@@ -27,6 +26,14 @@ from .ros2networkx import Ros2Networkx
 
 
 logger = LoggerFactory.create(__name__)
+
+
+def strtobool(val: str) -> bool:
+  """my strtobool"""
+  val = val.lower()
+  if val in ("y", "yes", "t", "true", "on", "1"):
+    return True
+  return False
 
 
 def save_ros2dot():
