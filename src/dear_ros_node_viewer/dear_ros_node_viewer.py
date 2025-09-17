@@ -102,7 +102,7 @@ def parse_args():
   parser.add_argument('--display_unconnected_nodes', type=strtobool, default=False)
   parser.add_argument('--displace_new_node', type=strtobool, default=False)
   parser.add_argument('--bg_white', type=strtobool, default=False, help='Use white background')
-  parser.add_argument('--save_only', type=strtobool, default=False)
+  parser.add_argument('--save_only', type=strtobool, default=False, help='Save dot file only for CLI')
   args = parser.parse_args()
 
   logger.debug(f'args.graph_file = {args.graph_file}')
