@@ -65,8 +65,8 @@ class Ros2Networkx():
     logger.info('graph.update done')
 
     dotcode_generator = RosGraphDotcodeGenerator(self.node_)
-    logger.info('generate_dotcode start')
-    dotcode = dotcode_generator.generate_dotcode(
+    logger.info('dotcode_generator start')
+    dotgraph = dotcode_generator.generate_dotgraph(
           rosgraphinst=graph,
           ns_filter='-/rosbag2_recorder',
           topic_filter='',
@@ -82,9 +82,13 @@ class Ros2Networkx():
           unreachable=True,
           hide_tf_nodes=True,
           hide_dynamic_reconfigure=True
-          )
-    logger.info('generate_dotcode done')
+    )
+    logger.info('dotcode_generator done')
+    dotgraph.write(filename + '.bin')
 
+    logger.info('create_dot start')
+    dotcode = PydotFactory().create_dot(dotgraph)
+    logger.info('create_dot done')
     if filename:
       with open(filename, encoding='UTF8', mode='w') as dot_file:
         dot_file.write(dotcode)
