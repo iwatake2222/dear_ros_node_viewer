@@ -83,8 +83,9 @@ class Ros2Networkx():
           hide_tf_nodes=True,
           hide_dynamic_reconfigure=True
     )
-    logger.info('dotcode_generator done')
-    dotgraph.write(filename + '.bin')
+    dotgraph.write(filename + '.graph')
+    logger.info(f'dotcode_generator done. {filename}.graph is created.')
+    logger.info('You can exit this by ctrl-c, in case the process takes very long time.')
 
     logger.info('create_dot start')
     dotcode = PydotFactory().create_dot(dotgraph)
