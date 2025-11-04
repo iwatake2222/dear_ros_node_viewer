@@ -23,6 +23,7 @@ from .caret_extend_path import get_path_dict
 from .dot2networkx import dot2networkx
 from .ros2networkx import Ros2Networkx
 from .graph_layout import place_node_by_group
+from .mermaid_exporter import save_graph_to_mermaid
 
 logger = LoggerFactory.create(__name__)
 
@@ -106,3 +107,13 @@ class GraphManager:
     """ Clear CARET path dict """
     self.caret_path_dict.clear()
     self.caret_path_dict['<< CLEAR >>'] = []
+
+  def export_to_mermaid(self) -> str:
+    """
+    Export current graph to Mermaid HTML file
+    
+    Returns:
+        str: Path to saved HTML file
+    """
+    html_path = save_graph_to_mermaid(self.graph, self.dir)
+    return html_path

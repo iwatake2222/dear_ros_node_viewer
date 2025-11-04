@@ -343,3 +343,12 @@ class GraphViewModel:
           self.color_highlight_caret_path)
       else:
         logger.error('%s is not included in the current graph', node_name)
+
+  def export_to_mermaid(self) -> str:
+    """
+    Export current graph to Mermaid HTML file
+    
+    Returns:
+        str: Path to saved HTML file
+    """
+    return self.graph_manager.export_to_mermaid()

@@ -116,6 +116,9 @@ class GraphView:
 
       dpg.add_menu_item(label="Copy", callback=self._cb_menu_copy, shortcut='(c)')
 
+      with dpg.menu(label="Export"):
+        dpg.add_menu_item(label="Export to Mermaid (HTML)", callback=self._cb_menu_export_mermaid_html, shortcut='(h)')
+
       with dpg.menu(label="Font"):
         dpg.add_slider_int(label="Font Size",
                    default_value=self.font_size, min_value=8, max_value=40,
@@ -310,6 +313,8 @@ class GraphView:
       self._cb_menu_layout_load()
     elif app_data == dpg.mvKey_C:
       self._cb_menu_copy()
+    elif app_data == dpg.mvKey_H:
+      self._cb_menu_export_mermaid_html()
 
   def _cb_menu_layout_reset(self):
     """ Reset layout """
@@ -374,6 +379,11 @@ class GraphView:
     """ High light selected CARET path """
     path_name = dpg.get_item_label(sender)
     self.graph_viewmodel.high_light_caret_path(path_name)
+
+  def _cb_menu_export_mermaid_html(self):
+    """ Export graph to Mermaid HTML format """
+    html_path = self.graph_viewmodel.export_to_mermaid()
+    logger.info(f"Exported to Mermaid HTML: {html_path}")
 
   def _make_font_table(self, font_path):
     """Make font table"""
