@@ -85,9 +85,9 @@ def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph) -> nx.classes.
 
 def dot2networkx(filename: str, display_unconnected_nodes=False) -> nx.classes.digraph.DiGraph:
   """Function to create NetworkX object from dot graph file (rosgraph.dot)"""
-  if filename[-3:]=='dot':
+  try:
     graph_org = nx.MultiDiGraph(nx.nx_pydot.read_dot(filename))
-  else:
+  except:
     graphs = pydot.graph_from_dot_file(filename)
     graph_org = nx.MultiDiGraph(nx.drawing.nx_pydot.from_pydot(graphs[0]))
 

@@ -20,6 +20,9 @@ from datetime import datetime
 import argparse
 import json
 import os
+import subprocess
+import traceback
+from pathlib import Path
 from .logger_factory import LoggerFactory
 from .graph_view import GraphView
 from .ros2networkx import Ros2Networkx
@@ -36,14 +39,28 @@ def strtobool(val: str) -> bool:
   return False
 
 
-def save_ros2dot():
+def save_info(save_path: Path):
+  """save other info"""
+  def run_and_save(command: list[str], outputfile: Path):
+    try:
+      logger.info(' '.join(command))
+      result = subprocess.run(command, capture_output=True, text=True)
+      with open(outputfile, 'w', encoding='utf-8') as f:
+        f.write(result.stderr)
+        f.write(result.stdout)
+    except Exception:
+      logger.error(f'Faild to run command. {traceback.format_exc()}')
+  run_and_save(['top', '-c', '-w', '500', '-b', '-d', '1', '-n', '3'], save_path.joinpath('top.txt'))
+  run_and_save(['ros2', 'node', 'list'], save_path.joinpath('ros2_node_list.txt'))
+  run_and_save(['ros2', 'topic', 'list'], save_path.joinpath('ros2_topic_list.txt'))
+  run_and_save(['ros2', 'component', 'list'], save_path.joinpath('ros2_component_list.txt'))
+
+
+def save_ros2dot(save_path: Path):
   """save dot file for the current ROS 2 graph"""
-  now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-  filename = f'./ros2_graph_{now_str}.dot'
   ros2networkx = Ros2Networkx()
-  ros2networkx.save_graph(filename)
+  ros2networkx.save_graph(save_path.joinpath('node_diagram.dot'))
   ros2networkx.shutdown()
-  logger.info(f'save to {filename}')
 
 
 def get_font_path(font_name: str) -> str:
@@ -132,7 +149,12 @@ def main():
   args = parse_args()
 
   if args.save_only:
-    save_ros2dot()
+    now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    save_path = Path(f'./ros2_graph_{now_str}')
+    Path.mkdir(save_path, exist_ok=True)
+    save_ros2dot(save_path)
+    save_info(save_path)
+    logger.info(f'save to {save_path}')
     return
 
   app_setting, group_setting = load_setting_json(args.graph_file, args.displace_new_node)

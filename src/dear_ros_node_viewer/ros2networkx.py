@@ -83,18 +83,17 @@ class Ros2Networkx():
           hide_tf_nodes=True,
           hide_dynamic_reconfigure=True
     )
-    dotgraph.write(filename + '.graph')
-    logger.info(f'dotcode_generator done. {filename}.graph is created.')
-    logger.info('You can exit this by ctrl-c, in case the process takes very long time.')
+    dotgraph.write(filename)
+    logger.info(f'dotcode_generator done. {filename} is created.')
+    return dotgraph
 
-    logger.info('create_dot start')
-    dotcode = PydotFactory().create_dot(dotgraph)
-    logger.info('create_dot done')
-    if filename:
-      with open(filename, encoding='UTF8', mode='w') as dot_file:
-        dot_file.write(dotcode)
-
-    return dotcode
+    # logger.info('create_dot start')
+    # dotcode = PydotFactory().create_dot(dotgraph)
+    # logger.info('create_dot done')
+    # if filename:
+    #   with open(filename, encoding='UTF8', mode='w') as dot_file:
+    #     dot_file.write(dotcode)
+    # return dotcode
 
   def get_graph(self) -> nx.classes.digraph.DiGraph:
     """get graph as NetworkX"""
