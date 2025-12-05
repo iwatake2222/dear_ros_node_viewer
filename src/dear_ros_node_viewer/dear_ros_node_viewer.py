@@ -44,7 +44,7 @@ def save_info(save_path: Path):
   def run_and_save(command: list[str], outputfile: Path):
     try:
       logger.info(' '.join(command))
-      result = subprocess.run(command, capture_output=True, text=True)
+      result = subprocess.run(command, capture_output=True, text=True, check=True)
       with open(outputfile, 'w', encoding='utf-8') as f:
         f.write(result.stderr)
         f.write(result.stdout)
