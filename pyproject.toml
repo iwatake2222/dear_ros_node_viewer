@@ -69,3 +69,8 @@ version_file = "src/dear_ros_node_viewer/_version.py"
 # version_scheme= "no-guess-dev"
 local_scheme = "no-local-version"
 fallback_version = "0.0.0"
+
+[tool.flake8]
+exclude = [".venv", "build", "dist", "*.egg-info"]
+max-line-length = 127
+max-complexity = 10
