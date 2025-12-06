@@ -46,6 +46,35 @@ dear_ros_node_viewer architecture_autoware.yaml
 [See WiKi](https://github.com/iwatake2222/dear_ros_node_viewer/wiki/01.-How-to-Use)
 
 
+## Development
+
+### Setup
+```sh
+git clone https://github.com/iwatake2222/dear_ros_node_viewer.git
+cd dear_ros_node_viewer
+pip install -e .
+pip install -r requirements.txt
+```
+
+### Running Tests
+```sh
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest --doctest-modules -v --cov=./src/dear_ros_node_viewer
+
+# Run single test file
+pytest tests/test_caret2networkx.py -v
+```
+
+### Linting
+```sh
+flake8 . --exclude=.venv --count --select=E9,F63,F7,F82 --show-source --statistics
+pylint ./src/dear_ros_node_viewer --disable=E0401,W1203,C0301
+```
+
+
 # Acknowledgements
 - Dear RosNodeViewer utilizes [Dear PyGui](https://github.com/hoffstadt/DearPyGui)
   - *Dear RosNodeViewer* is named in honor of Dear PyGui
