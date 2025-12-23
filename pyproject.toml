@@ -40,6 +40,7 @@ dependencies = [
   "dearpygui>=1.10.1",
   "matplotlib",
   "networkx",
+  "networkx-mermaid",
   "numpy",
   "pydot",
   "pyyaml",
