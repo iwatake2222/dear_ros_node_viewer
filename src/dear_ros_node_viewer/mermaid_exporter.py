@@ -14,6 +14,7 @@
 """Module to export NetworkX graph to Mermaid format"""
 from __future__ import annotations
 from datetime import datetime
+import os
 import networkx as nx
 try:
   import networkx_mermaid as nxm
@@ -168,6 +169,10 @@ def save_graph_to_mermaid(graph: nx.DiGraph, base_dir: str = './') -> str:
   Returns:
       str: Path to saved HTML file
   """
+  # Ensure directory exists
+  if base_dir and base_dir != './':
+    os.makedirs(base_dir, exist_ok=True)
+
   # Generate timestamp for filename
   timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 

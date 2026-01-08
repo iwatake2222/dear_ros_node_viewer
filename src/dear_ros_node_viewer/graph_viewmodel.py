@@ -344,11 +344,14 @@ class GraphViewModel:
       else:
         logger.error('%s is not included in the current graph', node_name)
 
-  def export_to_mermaid(self) -> str:
+  def export_to_mermaid(self, output_dir: str | None = None) -> str:
     """
     Export current graph to Mermaid HTML file
+    
+    Args:
+        output_dir: Output directory path. If None, uses default directory
     
     Returns:
         str: Path to saved HTML file
     """
-    return self.graph_manager.export_to_mermaid()
+    return self.graph_manager.export_to_mermaid(output_dir)

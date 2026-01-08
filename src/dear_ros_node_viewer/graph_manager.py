@@ -108,12 +108,16 @@ class GraphManager:
     self.caret_path_dict.clear()
     self.caret_path_dict['<< CLEAR >>'] = []
 
-  def export_to_mermaid(self) -> str:
+  def export_to_mermaid(self, output_dir: str | None = None) -> str:
     """
     Export current graph to Mermaid HTML file
+    
+    Args:
+        output_dir: Output directory path. If None, uses self.dir
     
     Returns:
         str: Path to saved HTML file
     """
-    html_path = save_graph_to_mermaid(self.graph, self.dir)
+    target_dir = output_dir if output_dir is not None else self.dir
+    html_path = save_graph_to_mermaid(self.graph, target_dir)
     return html_path
