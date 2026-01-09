@@ -26,6 +26,8 @@ from pathlib import Path
 from .logger_factory import LoggerFactory
 from .graph_view import GraphView
 from .ros2networkx import Ros2Networkx
+from .dot2networkx import dot2networkx
+from .mermaid_exporter import export_to_mermaid_html
 
 
 logger = LoggerFactory.create(__name__)
@@ -58,9 +60,12 @@ def save_info(save_path: Path):
 
 def save_ros2dot(save_path: Path):
   """save dot file for the current ROS 2 graph"""
+  dot_filename = save_path.joinpath('node_diagram.dot')
   ros2networkx = Ros2Networkx()
-  ros2networkx.save_graph(save_path.joinpath('node_diagram.dot'))
+  ros2networkx.save_graph(dot_filename)
   ros2networkx.shutdown()
+  graph = dot2networkx(dot_filename, display_unconnected_nodes=True)
+  export_to_mermaid_html(graph, save_path.joinpath('node_diagram.mermaid.html'), 'ROS Node Graph')
 
 
 def get_font_path(font_name: str) -> str:
