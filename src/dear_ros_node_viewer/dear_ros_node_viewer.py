@@ -53,9 +53,9 @@ def save_info(save_path: Path):
     except Exception:
       logger.error(f'Faild to run command. {traceback.format_exc()}')
   run_and_save(['top', '-c', '-w', '500', '-b', '-d', '1', '-n', '3'], save_path.joinpath('top.txt'))
-  run_and_save(['ros2', 'node', 'list'], save_path.joinpath('ros2_node_list.txt'))
-  run_and_save(['ros2', 'topic', 'list'], save_path.joinpath('ros2_topic_list.txt'))
-  run_and_save(['ros2', 'component', 'list'], save_path.joinpath('ros2_component_list.txt'))
+  run_and_save(['ros2', 'node', 'list', '--spin-time', '5.0'], save_path.joinpath('ros2_node_list.txt'))
+  run_and_save(['ros2', 'topic', 'list', '--spin-time', '5.0'], save_path.joinpath('ros2_topic_list.txt'))
+  run_and_save(['ros2', 'component', 'list', '--spin-time', '5.0'], save_path.joinpath('ros2_component_list.txt'))
 
 
 def save_ros2dot(save_path: Path):
@@ -157,8 +157,8 @@ def main():
     now_str = datetime.now().strftime("%Y%m%d_%H%M%S")
     save_path = Path(f'./ros2_graph_{now_str}')
     Path.mkdir(save_path, exist_ok=True)
-    save_ros2dot(save_path)
     save_info(save_path)
+    save_ros2dot(save_path)
     logger.info(f'save to {save_path}')
     return
 
