@@ -24,11 +24,8 @@ https://user-images.githubusercontent.com/105265012/177068238-eaf4fed9-12c0-4c5b
 
 ## Get Started
 ```sh
-# Install requirements
-sudo apt install graphviz
-
 # Install Dear RosNodeViewer
-pip install dear-ros-node-viewer
+pipx install dear-ros-node-viewer --system-site-packages
 
 # Download sample graph
 wget https://raw.githubusercontent.com/iwatake2222/dear_ros_node_viewer/main/sample/architecture_autoware.yaml

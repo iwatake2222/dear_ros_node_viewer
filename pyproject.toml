@@ -39,10 +39,10 @@ classifiers = [
 dependencies = [
   "dearpygui>=1.10.1",
   "matplotlib",
-  "networkx>=3.0",
+  "networkx~=3.4",
   "networkx-mermaid",
-  "numpy",
-  "pydot>=3.0,<4.0.0",
+  "numpy~=1.26",
+  "pydot~=3.0",
   "pyyaml",
 ]
 
