@@ -15,47 +15,52 @@
     ]
   },
   "group_setting": {
-    "/sensing": {
+    "/sensing/": {
       "direction": "horizontal",
       "offset": [0.0, 0.0, 2.5, 2.0],
       "color": [128, 0, 128]
     },
-    "/localization": {
+    "/localization/": {
       "direction": "horizontal",
       "offset": [0.0, 2.5, 2.5, 2.0],
       "color": [0, 0, 128]
     },
-    "/map": {
+    "/map/": {
       "direction": "horizontal",
       "offset": [0.0, 4.5, 1.0, 1.0],
       "color": [0, 0, 128]
     },
-    "/perception": {
+    "/perception/": {
       "direction": "horizontal",
       "offset": [3.0, 0.0, 7.0, 3.0],
       "color": [0, 128, 0]
     },
-    "/planning": {
+    "/planning/": {
       "direction": "horizontal",
       "offset": [3.0, 3.0, 4.0, 2.0],
       "color": [128, 128, 0]
     },
-    "/control": {
+    "/control/": {
       "direction": "horizontal",
       "offset": [8.0, 3.0, 3.0, 1.5],
       "color": [196, 64, 0]
     },
-    "/system": {
+    "/system/": {
       "direction": "horizontal",
       "offset": [7.0, 6.0, 1.0, 5.0],
       "color": [64, 64, 128]
     },
-    "/adapi": {
+    "/adapi/": {
       "direction": "horizontal",
       "offset": [8.0, 6.0, 1.0, 5.0],
       "color": [0, 64, 64]
     },
-    "/default_ad_api": {
+    "/tier4_api/": {
+      "direction": "horizontal",
+      "offset": [9.0, 6.0, 1.0, 2.0],
+      "color": [0, 64, 64]
+    },
+    "/autoware_api/": {
       "direction": "horizontal",
       "offset": [9.0, 6.0, 1.0, 2.0],
       "color": [0, 64, 64]
