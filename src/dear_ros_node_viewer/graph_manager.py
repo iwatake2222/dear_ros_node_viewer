@@ -40,14 +40,16 @@ class GraphManager:
   def load_graph_from_caret(self, filename: str, target_path: str = 'all_graph'):
     """ load_graph_from_caret """
     self.graph = caret2networkx(filename, target_path,
-                  self.app_setting['display_unconnected_nodes'])
+                  self.app_setting['display_unconnected_nodes'],
+                  self.app_setting['display_unconnected_topics'])
     self.graph = extend_callback_group(filename, self.graph)
     self.load_graph_postprocess(filename)
     self.caret_path_dict.update(get_path_dict(filename))
 
   def load_graph_from_dot(self, filename: str):
     """ load_graph_from_dot """
-    self.graph = dot2networkx(filename, self.app_setting['display_unconnected_nodes'])
+    self.graph = dot2networkx(filename, self.app_setting['display_unconnected_nodes'],
+                  self.app_setting['display_unconnected_topics'])
     self.load_graph_postprocess(filename)
 
   def load_graph_from_running_ros(self):

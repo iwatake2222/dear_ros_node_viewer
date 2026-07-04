@@ -49,7 +49,8 @@ def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph,
 
 
 def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph,
-               display_unconnected_nodes=False) -> nx.classes.digraph.DiGraph:
+               display_unconnected_nodes=False,
+               display_unconnected_topics=False) -> nx.classes.digraph.DiGraph:
   """Create NetworkX Object from dot graph file (nodes / topics) by rqt_graph"""
 
   # "/topic_0": ["/node_0", ], <- publishers of /topic_0 are ["/node_0", ] #
@@ -79,7 +80,8 @@ def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph,
       else:
         topic_sub_dict[src_name] = [dst_name]
 
-  graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict)
+  graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict,
+                       display_unconnected_topics)
 
   if display_unconnected_nodes:
     for node_id in graph_org.nodes:
@@ -90,7 +92,8 @@ def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph,
   return graph
 
 
-def dot2networkx(filename: str, display_unconnected_nodes=False) -> nx.classes.digraph.DiGraph:
+def dot2networkx(filename: str, display_unconnected_nodes=False,
+         display_unconnected_topics=False) -> nx.classes.digraph.DiGraph:
   """Function to create NetworkX object from dot graph file (rosgraph.dot)"""
   try:
     graph_org = nx.MultiDiGraph(nx.nx_pydot.read_dot(filename))
@@ -108,7 +111,8 @@ def dot2networkx(filename: str, display_unconnected_nodes=False) -> nx.classes.d
   if is_node_only:
     graph = dot2networkx_nodeonly(graph_org, display_unconnected_nodes)
   else:
-    graph = dot2networkx_nodetopic(graph_org, display_unconnected_nodes)
+    graph = dot2networkx_nodetopic(graph_org, display_unconnected_nodes,
+                   display_unconnected_topics)
 
   logger.info('len(connected_nodes) = %d', len(graph.nodes))
 

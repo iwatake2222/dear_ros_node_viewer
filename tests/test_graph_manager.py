@@ -34,6 +34,7 @@ def get_default_app_setting():
     """Helper to create default app settings for tests"""
     return {
         'display_unconnected_nodes': False,
+        'display_unconnected_topics': False,
         'ignore_node_list': [],
         'ignore_topic_list': [],
     }
