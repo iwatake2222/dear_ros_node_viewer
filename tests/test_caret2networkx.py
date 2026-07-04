@@ -211,8 +211,20 @@ class TestMakeGraphFromTopicAssociation:
 
         graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict)
 
-        # Node should not be added if there's no subscriber
-        assert not graph.has_node('"/node_a"')
+        assert graph.has_node('"/node_a"')
+        assert '/topic_1' in graph.nodes['"/node_a"'].get('pub_only_topics', [])
+        assert len(graph.edges) == 0
+
+    def test_make_graph_no_publisher(self):
+        """Test graph creation when topic has no publisher"""
+        topic_pub_dict = {}
+        topic_sub_dict = {'/topic_1': ['"/node_b"']}
+
+        graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict)
+
+        assert graph.has_node('"/node_b"')
+        assert '/topic_1' in graph.nodes['"/node_b"'].get('sub_only_topics', [])
+        assert len(graph.edges) == 0
 
     def test_make_graph_multiple_connections(self):
         """Test graph with multiple publishers and subscribers"""

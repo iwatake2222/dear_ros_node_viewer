@@ -48,7 +48,8 @@ def dot2networkx_nodeonly(graph_org: nx.classes.digraph.DiGraph,
   return graph
 
 
-def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph) -> nx.classes.digraph.DiGraph:
+def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph,
+               display_unconnected_nodes=False) -> nx.classes.digraph.DiGraph:
   """Create NetworkX Object from dot graph file (nodes / topics) by rqt_graph"""
 
   # "/topic_0": ["/node_0", ], <- publishers of /topic_0 are ["/node_0", ] #
@@ -80,6 +81,12 @@ def dot2networkx_nodetopic(graph_org: nx.classes.digraph.DiGraph) -> nx.classes.
 
   graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict)
 
+  if display_unconnected_nodes:
+    for node_id in graph_org.nodes:
+      node_data = graph_org.nodes[node_id]
+      if 'label' in node_data and node_data.get('shape') == 'ellipse':
+        graph.add_node(node_data['label'])
+
   return graph
 
 
@@ -101,7 +108,7 @@ def dot2networkx(filename: str, display_unconnected_nodes=False) -> nx.classes.d
   if is_node_only:
     graph = dot2networkx_nodeonly(graph_org, display_unconnected_nodes)
   else:
-    graph = dot2networkx_nodetopic(graph_org)
+    graph = dot2networkx_nodetopic(graph_org, display_unconnected_nodes)
 
   logger.info('len(connected_nodes) = %d', len(graph.nodes))
 

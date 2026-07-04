@@ -86,7 +86,11 @@ class GraphManager:
     logger.info('%s nodes are removed by filter', len(remove_node_list))
 
     if not self.app_setting['display_unconnected_nodes']:
-      isolated_node_list = list(nx.isolates(self.graph))
+      isolated_node_list = [
+        n for n in nx.isolates(self.graph)
+        if not self.graph.nodes[n].get('pub_only_topics')
+        and not self.graph.nodes[n].get('sub_only_topics')
+      ]
       logger.info('%s nodes are removed due to isolated', len(isolated_node_list))
       self.graph.remove_nodes_from(isolated_node_list)
 

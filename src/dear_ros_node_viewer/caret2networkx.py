@@ -85,16 +85,24 @@ def make_graph_from_topic_association(topic_pub_dict: dict[str, list[str]],
                     topic_sub_dict: dict[str, list[str]]):
   """make graph from topic association"""
   graph = nx.MultiDiGraph()
+
   for topic, node_pub_list in topic_pub_dict.items():
     if topic in topic_sub_dict:
-      node_sub_list = topic_sub_dict[topic]
+      for node_pub in node_pub_list:
+        for node_sub in topic_sub_dict[topic]:
+          graph.add_edge(node_pub, node_sub, label=topic)
     else:
-      # node_sub_list = ["none:" + topic]
-      continue
-    for node_pub in node_pub_list:
+      for node_pub in node_pub_list:
+        if node_pub not in graph.nodes:
+          graph.add_node(node_pub)
+        graph.nodes[node_pub].setdefault('pub_only_topics', []).append(topic)
+
+  for topic, node_sub_list in topic_sub_dict.items():
+    if topic not in topic_pub_dict:
       for node_sub in node_sub_list:
-        # logger.debug(f'{topic}, {node_pub}, {node_sub}')
-        graph.add_edge(node_pub, node_sub, label=topic)
+        if node_sub not in graph.nodes:
+          graph.add_node(node_sub)
+        graph.nodes[node_sub].setdefault('sub_only_topics', []).append(topic)
 
   return graph
 

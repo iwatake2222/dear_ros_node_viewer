@@ -209,6 +209,13 @@ class GraphView:
           continue
         edge_list_sub.append(label)
 
+    for topic in graph.nodes[node_name].get('pub_only_topics', []):
+      if topic not in edge_list_pub:
+        edge_list_pub.append(topic)
+    for topic in graph.nodes[node_name].get('sub_only_topics', []):
+      if topic not in edge_list_sub:
+        edge_list_sub.append(topic)
+
     for edge in edge_list_sub:
       with dpg.node_attribute(attribute_type=dpg.mvNode_Attr_Input) as attr_id:
         text_id = dpg.add_text(default_value=edge)
