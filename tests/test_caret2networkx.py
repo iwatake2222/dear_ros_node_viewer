@@ -204,8 +204,8 @@ class TestMakeGraphFromTopicAssociation:
         assert graph.has_node('"/node_b"')
         assert graph.has_edge('"/node_a"', '"/node_b"')
 
-    def test_make_graph_no_subscriber(self):
-        """Test graph creation when topic has no subscriber"""
+    def test_make_graph_no_subscriber_default(self):
+        """Test that pub-only topics are not displayed by default"""
         topic_pub_dict = {'/topic_1': ['"/node_a"']}
         topic_sub_dict = {}
 
@@ -213,6 +213,40 @@ class TestMakeGraphFromTopicAssociation:
 
         # Node should not be added if there's no subscriber
         assert not graph.has_node('"/node_a"')
+
+    def test_make_graph_no_subscriber_displayed(self):
+        """Test graph creation when topic has no subscriber and display is enabled"""
+        topic_pub_dict = {'/topic_1': ['"/node_a"']}
+        topic_sub_dict = {}
+
+        graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict,
+                              display_unconnected_topics=True)
+
+        assert graph.has_node('"/node_a"')
+        assert '/topic_1' in graph.nodes['"/node_a"'].get('pub_only_topics', [])
+        assert len(graph.edges) == 0
+
+    def test_make_graph_no_publisher_default(self):
+        """Test that sub-only topics are not displayed by default"""
+        topic_pub_dict = {}
+        topic_sub_dict = {'/topic_1': ['"/node_b"']}
+
+        graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict)
+
+        # Node should not be added if there's no publisher
+        assert not graph.has_node('"/node_b"')
+
+    def test_make_graph_no_publisher_displayed(self):
+        """Test graph creation when topic has no publisher and display is enabled"""
+        topic_pub_dict = {}
+        topic_sub_dict = {'/topic_1': ['"/node_b"']}
+
+        graph = make_graph_from_topic_association(topic_pub_dict, topic_sub_dict,
+                              display_unconnected_topics=True)
+
+        assert graph.has_node('"/node_b"')
+        assert '/topic_1' in graph.nodes['"/node_b"'].get('sub_only_topics', [])
+        assert len(graph.edges) == 0
 
     def test_make_graph_multiple_connections(self):
         """Test graph with multiple publishers and subscribers"""

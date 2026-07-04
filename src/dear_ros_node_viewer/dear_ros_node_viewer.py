@@ -58,13 +58,14 @@ def save_info(save_path: Path):
   run_and_save(['ros2', 'component', 'list', '--spin-time', '5.0'], save_path.joinpath('ros2_component_list.txt'))
 
 
-def save_ros2dot(save_path: Path):
+def save_ros2dot(save_path: Path, display_unconnected_topics=False):
   """save dot file for the current ROS 2 graph"""
   dot_filename = save_path.joinpath('node_diagram.dot')
   ros2networkx = Ros2Networkx()
   ros2networkx.save_graph(dot_filename)
   ros2networkx.shutdown()
-  graph = dot2networkx(dot_filename, display_unconnected_nodes=True)
+  graph = dot2networkx(dot_filename, display_unconnected_nodes=True,
+             display_unconnected_topics=display_unconnected_topics)
   export_to_mermaid_html(graph, save_path.joinpath('node_diagram.mermaid.html'), 'ROS Node Graph')
 
 
@@ -131,6 +132,8 @@ def parse_args():
   parser.add_argument('--display_callback_detail', type=strtobool, default=True)
   parser.add_argument('--disable_ignore_filter', type=strtobool, default=False)
   parser.add_argument('--display_unconnected_nodes', type=strtobool, default=False)
+  parser.add_argument('--display_unconnected_topics', type=strtobool, default=False,
+            help='Display topics connected on only one side (pub without sub / sub without pub)')
   parser.add_argument('--displace_new_node', type=strtobool, default=False)
   parser.add_argument('--bg_white', type=strtobool, default=False, help='Use white background')
   parser.add_argument('--save_only', type=strtobool, default=False, help='Save dot file only for CLI')
@@ -140,6 +143,7 @@ def parse_args():
   logger.debug(f'args.display_callback_detail = {args.display_callback_detail}')
   logger.debug(f'args.disable_ignore_filter = {args.disable_ignore_filter}')
   logger.debug(f'args.display_unconnected_nodes = {args.display_unconnected_nodes}')
+  logger.debug(f'args.display_unconnected_topics = {args.display_unconnected_topics}')
   logger.debug(f'args.displace_new_node = {args.displace_new_node}')
   logger.debug(f'args.bg_white = {args.bg_white}')
   logger.debug(f'args.save_only = {args.save_only}')
@@ -158,7 +162,7 @@ def main():
     save_path = Path(f'./ros2_graph_{now_str}')
     Path.mkdir(save_path, exist_ok=True)
     save_info(save_path)
-    save_ros2dot(save_path)
+    save_ros2dot(save_path, args.display_unconnected_topics)
     logger.info(f'save to {save_path}')
     return
 
@@ -171,6 +175,7 @@ def main():
       app_setting['ignore_topic_list'] = []
 
   app_setting['display_unconnected_nodes'] = args.display_unconnected_nodes
+  app_setting['display_unconnected_topics'] = args.display_unconnected_topics
   app_setting['bg_white'] = args.bg_white
   if args.bg_white:
     # make component colors bright
