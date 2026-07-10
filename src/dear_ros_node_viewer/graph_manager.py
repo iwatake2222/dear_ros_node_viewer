@@ -55,8 +55,10 @@ class GraphManager:
   def load_graph_from_running_ros(self):
     """ load_graph_from_running_ros """
     ros2networkx = Ros2Networkx(node_name='temp')
-    ros2networkx.save_graph('./temp.dot')
-    ros2networkx.shutdown()
+    try:
+      ros2networkx.save_graph('./temp.dot')
+    finally:
+      ros2networkx.shutdown()
     self.load_graph_from_dot('./temp.dot')
     # for node in self.graph.nodes:
     #     if '"/temp"' == node:
